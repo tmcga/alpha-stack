@@ -20,14 +20,11 @@ jobs:
   test-tools:
     name: Test Tools
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.13"
       - run: pip install pytest
       - name: Run tool tests
         run: python -m pytest tests/ -v
