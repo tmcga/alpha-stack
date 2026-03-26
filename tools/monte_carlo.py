@@ -38,7 +38,7 @@ def monte_carlo_sim(initial: float, expected_return: float, volatility: float,
     annual_withdrawal = initial * withdrawal_rate
 
     terminal_values = []
-    min_values = []
+    worst_path_min = initial
     ruin_count = 0
 
     for _ in range(num_sims):
@@ -47,12 +47,9 @@ def monte_carlo_sim(initial: float, expected_return: float, volatility: float,
         ruined = False
 
         for yr in range(years):
-            # GBM step
             z = random.gauss(0, 1)
             annual_return = math.exp(drift + volatility * z)
             value *= annual_return
-
-            # Cash flows
             value += contribution
             value -= annual_withdrawal
 
@@ -64,7 +61,7 @@ def monte_carlo_sim(initial: float, expected_return: float, volatility: float,
             path_min = min(path_min, value)
 
         terminal_values.append(value)
-        min_values.append(path_min)
+        worst_path_min = min(worst_path_min, path_min)
         if ruined:
             ruin_count += 1
 
@@ -78,7 +75,6 @@ def monte_carlo_sim(initial: float, expected_return: float, volatility: float,
 
     # Statistics
     mean_terminal = sum(terminal_values) / n
-    median_terminal = percentile(50)
 
     # Success probability
     if goal > 0:
@@ -87,10 +83,7 @@ def monte_carlo_sim(initial: float, expected_return: float, volatility: float,
     else:
         success_prob = None
 
-    # Max drawdown from initial (worst path minimum)
-    min_values.sort()
-    worst_min = min_values[0]
-    worst_dd = (worst_min - initial) / initial if initial > 0 else 0
+    worst_dd = (worst_path_min - initial) / initial if initial > 0 else 0
 
     # Parametric VaR from terminal distribution
     var_5 = percentile(5)
@@ -101,12 +94,11 @@ def monte_carlo_sim(initial: float, expected_return: float, volatility: float,
         "years": years,
         "num_simulations": num_sims,
         "mean_terminal": mean_terminal,
-        "median_terminal": median_terminal,
         "percentile_1": var_1,
         "percentile_5": var_5,
         "percentile_10": percentile(10),
         "percentile_25": percentile(25),
-        "percentile_50": median_terminal,
+        "percentile_50": percentile(50),
         "percentile_75": percentile(75),
         "percentile_90": percentile(90),
         "percentile_95": percentile(95),

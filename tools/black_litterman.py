@@ -138,14 +138,14 @@ def main():
     parser.add_argument("--assets", default=None, help="Asset names (comma-sep)")
     args = parser.parse_args()
 
-    weights = [float(x) for x in args.weights.split(",")]
-    cov = [[float(x) for x in row.split(",")] for row in args.cov.split(";")]
+    weights = [float(x.strip()) for x in args.weights.split(",")]
+    cov = [[float(x.strip()) for x in row.split(",")] for row in args.cov.split(";")]
     names = args.assets.split(",") if args.assets else None
 
     P, Q = None, None
     if args.views and args.view_returns:
-        P = [[float(x) for x in row.split(",")] for row in args.views.split(";")]
-        Q = [float(x) for x in args.view_returns.split(",")]
+        P = [[float(x.strip()) for x in row.split(",")] for row in args.views.split(";")]
+        Q = [float(x.strip()) for x in args.view_returns.split(",")]
 
     r = black_litterman(weights, cov, args.risk_aversion, args.tau, P, Q, asset_names=names)
 

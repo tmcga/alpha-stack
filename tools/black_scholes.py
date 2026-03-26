@@ -36,6 +36,7 @@ def black_scholes(spot: float, strike: float, time: float, rate: float,
     Returns:
         Dict with price, delta, gamma, vega, theta, rho, vanna, charm.
     """
+    option_type = option_type.lower()
     if time <= 0:
         if option_type == "call":
             intrinsic = max(spot - strike, 0)

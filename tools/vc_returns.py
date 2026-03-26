@@ -60,6 +60,7 @@ def _solve_irr(cash_flows: list[float], tol: float = 1e-8, max_iter: int = 200) 
         if abs(dnpv) < 1e-14:
             break
         r_new = r - npv / dnpv
+        r_new = max(-0.99, min(r_new, 10.0))
         if abs(r_new - r) < tol:
             return r_new
         r = r_new
