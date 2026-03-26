@@ -363,9 +363,7 @@ class TestBlackLitterman:
     def test_singular_matrix_raises(self):
         """Singular covariance matrix should raise when views trigger inversion."""
         with pytest.raises(ValueError, match="singular"):
-            black_litterman(
-                [0.5, 0.5], [[1, 2], [2, 4]], 2.5, 0.05, P=[[1, -1]], Q=[0.02]
-            )
+            black_litterman([0.5, 0.5], [[1, 2], [2, 4]], 2.5, 0.05, P=[[1, -1]], Q=[0.02])
 
 
 # ── Monte Carlo ───────────────────────────────────────────────────────────
