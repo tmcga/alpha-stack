@@ -74,11 +74,8 @@ def portfolio_metrics(returns: list[float], risk_free: float = 0.0,
     wins = sum(1 for r in returns if r > 0)
     win_rate = wins / n
 
-    # Cumulative return
-    cumulative_return = 1.0
-    for r in returns:
-        cumulative_return *= (1 + r)
-    cumulative_return -= 1
+    # Cumulative return (reuse cumulative from drawdown loop)
+    cumulative_return = cumulative - 1
 
     # Parametric VaR (normal assumption)
     param_var_95 = -(mean_return - 1.645 * std_dev)

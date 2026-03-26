@@ -1,114 +1,143 @@
-# Alpha Prompts
+# Alpha Stack
 
-The open-source Wall Street AI toolkit. 50+ prompt libraries covering every major desk across finance, plus lightweight tools for valuation, options pricing, and portfolio analysis.
+> What if every analyst had a senior MD's frameworks, a quant's toolkit, and a risk officer's discipline — loaded into their terminal?
 
-**Every prompt includes:** role-specific AI personas, mathematical frameworks, and fill-in-the-blank templates ready for Claude, ChatGPT, or any LLM.
+**Alpha Stack** is an installable AI skill system for finance. 12 skills covering every major Wall Street desk, 19 computational tools with zero dependencies, and a structured workflow for investment analysis — from sourcing ideas to monitoring positions.
 
-## Quick Start
+It turns Claude Code into a **virtual finance team**: an M&A banker who builds merger models, a derivatives trader who thinks in Greeks, a portfolio manager who optimizes with Black-Litterman, and a risk officer who stress-tests everything with Monte Carlo.
 
-Pick your desk and start prompting:
+---
 
-| Category | Desks | Highlights |
-|----------|-------|------------|
-| [Banking](ai-prompts/banking/) | M&A, LevFin, ECM, DCM, Restructuring, Research | Merger models, covenant analysis, IPO pricing, waterfall analysis |
-| [Trading](ai-prompts/trading/) | Equities, Fixed Income, Derivatives, Structured Products, FX, Commodities, Market Making | Black-Scholes Greeks, CLO waterfalls, Avellaneda-Stoikov |
-| [Hedge Funds](ai-prompts/hedge-funds/) | Fundamental L/S, Global Macro, Quant/Systematic, Event-Driven, Credit | Kelly criterion, merger arb, factor models, Merton model |
-| [Private Capital](ai-prompts/private-capital/) | Buyouts, Growth Equity, Real Estate, Private Credit, Infrastructure, Special Situations | LBO modeling, cap rates, covenant design, concession analysis |
-| [Asset Management](ai-prompts/asset-management/) | Active Equity, Factor/Systematic, Fixed Income, Multi-Asset, Alternatives, Risk | Black-Litterman, Brinson attribution, VaR/CVaR, factor decomposition |
-| [Venture Capital](ai-prompts/venture/) | Early Stage, Growth, Crypto/Web3, Biotech, Platform Ops | Token economics, rNPV, term sheets, founder evaluation |
-| [Wealth Management](ai-prompts/wealth-management/) | Private Banking, Financial Planning, Estate/Tax, Alternatives, Portfolio Construction | GRAT modeling, Monte Carlo, goals-based allocation, tax-loss harvesting |
+## Install (30 seconds)
 
-**Start here:** The [Cross-Reference Guide](ai-prompts/cross-reference-guide.md) shows how the same event looks through 5 different desk lenses — 24 perspectives total.
-
-## Finance Tools (19)
-
-Standalone Python calculators with zero external dependencies. Run from the command line or import as modules.
-
-**Valuation & Corporate Finance**
-| Tool | What It Does |
-|------|-------------|
-| [dcf.py](tools/dcf.py) | DCF valuation — Gordon Growth or exit multiple, with sensitivity tables |
-| [lbo.py](tools/lbo.py) | LBO returns — MOIC, IRR, attribution, detailed FCF build |
-| [wacc.py](tools/wacc.py) | WACC — CAPM build-up with size premium, country risk |
-
-**Options & Derivatives**
-| Tool | What It Does |
-|------|-------------|
-| [black_scholes.py](tools/black_scholes.py) | Options pricing — Greeks, vanna, charm, dividend yield |
-| [implied_vol.py](tools/implied_vol.py) | Implied volatility solver from market prices |
-| [convertible.py](tools/convertible.py) | Convertible bond pricer — bond floor, parity, embedded option |
-
-**Fixed Income & Credit**
-| Tool | What It Does |
-|------|-------------|
-| [bond_yield.py](tools/bond_yield.py) | Bond analytics — YTM, duration, convexity, DV01, G/Z-spread |
-| [merton_model.py](tools/merton_model.py) | Structural credit model — distance to default, credit spreads |
-| [credit_spread.py](tools/credit_spread.py) | Credit analysis — Altman Z-Score, hazard rates, default probabilities |
-
-**Portfolio & Risk**
-| Tool | What It Does |
-|------|-------------|
-| [portfolio_risk.py](tools/portfolio_risk.py) | Risk metrics — Sharpe, Sortino, VaR, CVaR, benchmark-relative |
-| [kelly.py](tools/kelly.py) | Kelly criterion — optimal position sizing, drawdown risk |
-| [brinson.py](tools/brinson.py) | Brinson-Fachler performance attribution |
-| [black_litterman.py](tools/black_litterman.py) | Black-Litterman portfolio optimizer with investor views |
-| [monte_carlo.py](tools/monte_carlo.py) | Monte Carlo simulation — portfolio growth, retirement planning |
-
-**M&A & Special Situations**
-| Tool | What It Does |
-|------|-------------|
-| [merger_arb.py](tools/merger_arb.py) | Merger arb — spreads, implied probability, collar, CVR |
-
-**Real Estate, VC & Lending**
-| Tool | What It Does |
-|------|-------------|
-| [cap_rate.py](tools/cap_rate.py) | Real estate valuation — cap rate, NOI, development spread |
-| [vc_returns.py](tools/vc_returns.py) | VC fund returns (TVPI/DPI/RVPI/IRR) and dilution waterfall |
-| [loan_amort.py](tools/loan_amort.py) | Loan amortization — payment schedule, early payoff savings |
-
-**Quantitative Trading**
-| Tool | What It Does |
-|------|-------------|
-| [market_maker.py](tools/market_maker.py) | Avellaneda-Stoikov optimal quoting — reservation price, spread |
-
-No dependencies required — just Python 3.10+.
-
-## How to Use the Prompts
-
-1. **Pick your desk** from the table above
-2. **Copy the role context prompt** at the top of each file — it calibrates the AI
-3. **Fill in the brackets** `[like this]` with your specific data
-4. **Paste into Claude, ChatGPT, or any LLM**
-
-Each file includes 4-6 prompt templates organized by workflow, with mathematical frameworks inline.
-
-## Full Prompt Library
-
-```
-ai-prompts/
-├── cross-reference-guide.md           # Same scenario, 5 desk perspectives, 24 prompts
-├── banking/                           # M&A, LevFin, ECM, DCM, Restructuring, Research
-├── trading/                           # Equities, FI, Derivatives, Structured, FX, Commodities, MM
-├── hedge-funds/                       # L/S, Macro, Quant, Event-Driven, Credit
-├── private-capital/                   # Buyouts, Growth, RE, Credit, Infra, Special Sits
-├── asset-management/                  # Active, Factor, FI, Multi-Asset, Alts, Risk
-├── venture/                           # Early, Growth, Crypto, Biotech, Platform Ops
-├── wealth-management/                 # Private Banking, Planning, Estate, Alts, Portfolio
-├── roles/                             # Foundation libraries (HF, IB, PE)
-├── strategy-development.md            # Quant trading strategy design
-└── llm-sentiment-prompts.md           # LLM-powered sentiment classification
+```bash
+git clone https://github.com/tmcga/alpha-prompts.git ~/alpha-stack
+cd ~/alpha-stack && ./setup.sh
 ```
 
-Browse the full index at [ai-prompts/README.md](ai-prompts/README.md).
+Open Claude Code. Type `/deal`. You're running.
+
+---
+
+## The Workflow
+
+Every analysis follows six phases:
+
+```
+  Source ──> Diligence ──> Model ──> Stress ──> Decide ──> Monitor
+    │           │            │          │          │          │
+  Frame the   Research    Run the    Break the   Ship the   Track the
+  question    deeply      numbers    thesis      memo       position
+```
+
+**Source** — Identify the opportunity. Frame the analytical question.
+**Diligence** — Deep research using desk-specific prompt frameworks.
+**Model** — Build the quantitative case. Run Python tools, sensitivity tables.
+**Stress** — Pre-mortem. What kills this thesis? Who is on the other side?
+**Decide** — Recommendation with conviction level, sizing, and risk/reward.
+**Monitor** — Catalyst calendar, thesis-drift triggers, exit criteria.
+
+---
+
+## 12 Skills
+
+| Command | Skill | What It Does |
+|---------|-------|-------------|
+| `/deal` | Deal Execution | M&A advisory, leveraged finance, restructuring, fairness opinions |
+| `/markets` | Capital Markets | ECM, DCM, equity research, IPO analysis |
+| `/derivatives` | Options & Derivatives | Black-Scholes, Greeks, implied vol, convertible bonds |
+| `/trade` | Trading & Execution | Equities, FI, FX, commodities, Avellaneda-Stoikov market making |
+| `/hedge` | Hedge Fund Strategies | L/S equity, macro, quant, event-driven, credit/distressed |
+| `/pe` | Private Capital | Buyouts, growth equity, special sits, private credit |
+| `/real-assets` | Real Assets | Real estate (cap rates, development), infrastructure |
+| `/portfolio` | Portfolio Construction | Black-Litterman, Brinson attribution, factor investing |
+| `/risk` | Risk Analytics | VaR/CVaR, Monte Carlo, stress testing, tail risk |
+| `/vc` | Venture Capital | Seed through growth, dilution modeling, fund metrics (TVPI/IRR) |
+| `/wealth` | Wealth Advisory | Retirement planning, estate/tax, goals-based allocation |
+| `/quant` | Quant Signals | Strategy development, LLM sentiment, cross-desk analysis |
+
+Each skill includes role-specific AI personas, structured workflows, mathematical frameworks, and automatic tool invocation.
+
+---
+
+## 19 Computational Tools
+
+Standalone Python calculators. Zero dependencies — just Python 3.10+. Run from CLI or import as modules.
+
+| Domain | Tools |
+|--------|-------|
+| **Valuation** | `dcf.py` `lbo.py` `wacc.py` |
+| **Options** | `black_scholes.py` `implied_vol.py` `convertible.py` |
+| **Fixed Income & Credit** | `bond_yield.py` `merton_model.py` `credit_spread.py` |
+| **Portfolio & Risk** | `portfolio_risk.py` `kelly.py` `brinson.py` `black_litterman.py` `monte_carlo.py` |
+| **M&A** | `merger_arb.py` |
+| **RE / VC / Lending** | `cap_rate.py` `vc_returns.py` `loan_amort.py` |
+| **Quant Trading** | `market_maker.py` |
+
+```bash
+# Run any tool directly
+python3 tools/dcf.py --fcf 100,110,121,133,146 --wacc 0.10 --terminal-growth 0.025 --shares 100
+python3 tools/kelly.py --win-prob 0.55 --win-loss-ratio 1.5 --fraction 0.5
+python3 tools/monte_carlo.py --initial 1000000 --return 0.07 --vol 0.15 --years 30 --withdrawal 0.04
+```
+
+Full tool documentation at [tools/README.md](tools/README.md).
+
+---
+
+## Example Session
+
+```
+You:     /deal
+Claude:  Deal Execution skill activated. What deal are you working on?
+
+You:     Sell-side M&A for a $200M revenue specialty chemical company.
+         EBITDA: $60M, growing 8%. Net debt: $150M. 100M shares out.
+
+Claude:  Let me build the valuation framework.
+         [Runs DCF, LBO, and WACC tools]
+         [Produces sensitivity tables]
+         [Generates buyer universe with strategic rationale]
+         [Stress-tests the downside: margin compression, cyclical risk]
+         [Delivers valuation range: $850M-$1.1B enterprise value]
+```
+
+---
+
+## Philosophy
+
+Alpha Stack is built on seven principles documented in [ETHOS.md](ETHOS.md):
+
+1. **Assumptions are the model** — every number is a bet; make the bets explicit
+2. **Second-order thinking** — "and then what?" is the most important question
+3. **Adversarial by default** — pre-mortem every thesis before it gets capital
+4. **Precision over confidence** — ranges over point estimates, distributions over averages
+5. **Tools verify intuition** — run the math, then interpret
+6. **Cross-desk fluency** — seeing all perspectives is the edge
+7. **No hallucinated numbers** — if the data doesn't exist, ask for it
+
+---
+
+## Project Structure
+
+```
+alpha-stack/
+├── CLAUDE.md              AI-native instructions for Claude Code
+├── ETHOS.md               The Alpha Edge — finance AI philosophy
+├── setup.sh               One-line installer
+├── skills/                12 skill directories (SKILL.md + prompts/)
+│   ├── deal-execution/
+│   ├── hedge-fund-strategies/
+│   ├── portfolio-construction/
+│   └── ...
+├── tools/                 19 Python calculators (stdlib-only)
+└── docs/                  Workflow documentation
+```
 
 ## Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-To add a new desk or tool:
-1. Follow the existing template (role context + categorized prompts + math frameworks)
-2. Open a PR
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on adding new skills, prompts, or tools.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) — fork it, extend it, make it yours.

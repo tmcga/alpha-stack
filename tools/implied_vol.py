@@ -45,6 +45,7 @@ def implied_volatility(market_price: float, spot: float, strike: float,
     Returns:
         Dict with implied vol, moneyness, intrinsic/time value.
     """
+    option_type = option_type.lower()
     # Intrinsic value
     if option_type == "call":
         intrinsic = max(spot - strike * math.exp(-rate * time), 0)

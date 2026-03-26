@@ -98,10 +98,10 @@ def main():
     parser.add_argument("--sectors", default=None, help="Sector names (comma-sep)")
     args = parser.parse_args()
 
-    pw = [float(x) for x in args.port_weights.split(",")]
-    pr = [float(x) for x in args.port_returns.split(",")]
-    bw = [float(x) for x in args.bench_weights.split(",")]
-    br = [float(x) for x in args.bench_returns.split(",")]
+    pw = [float(x.strip()) for x in args.port_weights.split(",")]
+    pr = [float(x.strip()) for x in args.port_returns.split(",")]
+    bw = [float(x.strip()) for x in args.bench_weights.split(",")]
+    br = [float(x.strip()) for x in args.bench_returns.split(",")]
     names = args.sectors.split(",") if args.sectors else None
 
     r = brinson_attribution(pw, pr, bw, br, names)

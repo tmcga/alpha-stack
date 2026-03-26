@@ -30,9 +30,8 @@ def kelly_criterion(win_prob: float, win_loss_ratio: float,
     full_kelly = win_prob - lose_prob / win_loss_ratio
     optimal_fraction = full_kelly * fraction
 
-    # Edge and odds
+    # Edge: expected return per unit bet
     edge = win_prob * win_loss_ratio - lose_prob
-    expected_return = edge  # per unit bet
 
     # Expected geometric growth rate: g = p*ln(1 + f*b) + q*ln(1 - f)
     f = max(0, min(optimal_fraction, 0.999))
@@ -55,7 +54,6 @@ def kelly_criterion(win_prob: float, win_loss_ratio: float,
         "applied_fraction": optimal_fraction,
         "kelly_multiplier": fraction,
         "edge": edge,
-        "expected_return_per_bet": expected_return,
         "geometric_growth_rate": geo_growth,
         "win_probability": win_prob,
         "win_loss_ratio": win_loss_ratio,
@@ -81,22 +79,32 @@ def multi_outcome_kelly(outcomes: list[tuple[float, float]]) -> dict:
 
     expected_value = sum(p * payoff for p, payoff in outcomes)
 
-    # Grid search for optimal f (maximizes geometric growth)
-    best_f = 0.0
-    best_growth = 0.0
-    for i in range(1, 1000):
-        f = i / 1000.0
-        growth = 0.0
-        valid = True
+    def _growth_rate(f, outcomes):
+        g = 0.0
         for prob, payoff in outcomes:
             val = 1 + f * payoff
             if val <= 0:
-                valid = False
-                break
-            growth += prob * math.log(val)
-        if valid and growth > best_growth:
-            best_growth = growth
-            best_f = f
+                return None
+            g += prob * math.log(val)
+        return g
+
+    # Ternary search for optimal f (growth function is concave)
+    lo, hi = 0.001, 0.999
+    for _ in range(100):
+        m1 = lo + (hi - lo) / 3
+        m2 = hi - (hi - lo) / 3
+        g1 = _growth_rate(m1, outcomes)
+        g2 = _growth_rate(m2, outcomes)
+        if g1 is None:
+            lo = m1
+        elif g2 is None:
+            hi = m2
+        elif g1 < g2:
+            lo = m1
+        else:
+            hi = m2
+    best_f = (lo + hi) / 2
+    best_growth = _growth_rate(best_f, outcomes) or 0.0
 
     return {
         "optimal_fraction": best_f,
@@ -119,7 +127,7 @@ def main():
     if args.outcomes:
         outcomes = []
         for pair in args.outcomes.split(","):
-            prob, payoff = pair.strip().split(":")
+            prob, payoff = [x.strip() for x in pair.split(":")]
             outcomes.append((float(prob), float(payoff)))
         r = multi_outcome_kelly(outcomes)
 
@@ -150,7 +158,7 @@ def main():
         frac_label = {0.25: "Quarter", 0.5: "Half", 1.0: "Full"}.get(
             r['kelly_multiplier'], f"{r['kelly_multiplier']:.0%}")
         print(f"  {frac_label} Kelly:  {r['applied_fraction']*100:>10.1f}%")
-        print(f"  Exp Return/Bet:     {r['expected_return_per_bet']*100:>+10.2f}%")
+        print(f"  Exp Return/Bet:     {r['edge']*100:>+10.2f}%")
         print(f"  Geo Growth Rate:    {r['geometric_growth_rate']*100:>10.4f}%")
         print(f"{'─'*50}")
         print(f"  Drawdown Risk (at full Kelly):")

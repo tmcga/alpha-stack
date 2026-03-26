@@ -39,7 +39,10 @@ def bond_ytm(face: float, coupon_rate: float, price: float, years: float,
         diff = pv - price
         if abs(diff) < tol:
             return ytm
+        if abs(dpv) < 1e-14:
+            break
         ytm -= diff / dpv
+        ytm = max(-0.99, min(ytm, 10.0))
 
     return ytm
 
@@ -100,6 +103,8 @@ def bond_analytics(face: float, coupon_rate: float, price: float,
             for t in range(1, n + 1):
                 cf = coupon if t < n else coupon + face
                 pv += cf / (1 + (benchmark_yield + zs_mid) / freq) ** t
+            if abs(pv - price) < 1e-8:
+                break
             if pv > price:
                 zs_low = zs_mid
             else:
