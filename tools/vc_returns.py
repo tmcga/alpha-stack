@@ -74,6 +74,8 @@ def dilution_waterfall(rounds: list[dict], founder_shares: int) -> dict:
 
     for i, rnd in enumerate(rounds):
         pre_money = rnd["pre_money"]
+        if pre_money <= 0:
+            raise ValueError(f"Round {i + 1}: pre-money valuation must be positive")
         invested = rnd["invested"]
         post_money = pre_money + invested
         pool_increase = rnd.get("pool_increase", 0)

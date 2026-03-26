@@ -52,6 +52,9 @@ def implied_volatility(
     Returns:
         Dict with implied vol, moneyness, intrinsic/time value.
     """
+    if market_price <= 0:
+        raise ValueError("Market price must be positive")
+
     option_type = option_type.lower()
     # Intrinsic value
     if option_type == "call":
