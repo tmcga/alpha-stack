@@ -105,6 +105,42 @@ When producing financial analysis:
 - **Risk caveats.** Every recommendation must include what kills the thesis — the bear case, the tail risk, the regime change.
 - **No hallucinated numbers.** If the user has not provided a data point, ask for it. Never fabricate financial data.
 
+## Standard Output Formats
+
+Use these templates for consistent, scannable output across all skills.
+
+**Valuation Summary:**
+```
+| Method              | Low     | Base    | High    |
+|---------------------|---------|---------|---------|
+| DCF (Gordon Growth) | $[X]M   | $[X]M   | $[X]M   |
+| DCF (Exit Multiple) | $[X]M   | $[X]M   | $[X]M   |
+| Precedent Txns      | $[X]M   | $[X]M   | $[X]M   |
+| LBO Floor           | $[X]M   | $[X]M   | $[X]M   |
+| **Recommended**     | **$[X]M** | **$[X]M** | **$[X]M** |
+```
+
+**Sensitivity Table:** Always a 5x5 grid with the two most impactful variables on the axes. Bold the base case cell. Label units clearly.
+
+**Investment Recommendation:**
+```
+Recommendation: [Long/Short/Buy/Sell/Hold]
+Conviction: [Low/Medium/High]
+Target: $[X] ([X]% upside/downside)
+Time Horizon: [X] months
+Position Size: [X]% of [portfolio/NAV]
+What Kills It: [one sentence — the single biggest risk]
+```
+
+**Risk Summary:** Top 3-5 risks in a table with Probability (Low/Med/High), Impact (Low/Med/High), and Mitigation (one sentence each).
+
+**Monitoring Checklist:**
+```
+Thesis-confirming: [3 signals that validate the thesis]
+Thesis-killing: [3 signals that invalidate — triggers for exit]
+Review date: [specific date or event]
+```
+
 ## Cross-Desk Analysis
 
 When analyzing a company, event, or market move, offer to show it through multiple desk perspectives. The same acquisition looks different to an M&A banker, an event-driven hedge fund, a credit analyst, and an equity research analyst. Cross-referencing is a first-class feature — it is often where the real edge is found.
