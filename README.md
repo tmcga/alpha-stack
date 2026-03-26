@@ -85,6 +85,49 @@ Full tool documentation at [tools/README.md](tools/README.md).
 
 ---
 
+## Claude Desktop (MCP Server)
+
+Alpha Stack also runs as an **MCP server** in Claude Desktop, exposing all 23 tool functions as native tools. No terminal needed — Claude calls the tools directly when you ask a finance question.
+
+### Quick Setup
+
+```bash
+./setup-mcp.sh
+```
+
+Restart Claude Desktop. The tools appear automatically (look for the hammer icon).
+
+### Manual Setup
+
+1. Install dependencies: `uv sync`
+2. Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "alpha-stack": {
+      "command": "uv",
+      "args": ["run", "--directory", "/path/to/alpha-stack", "python", "mcp_server.py"]
+    }
+  }
+}
+```
+3. Restart Claude Desktop.
+
+### What It Looks Like
+
+```
+You:     What's the DCF value for a company with FCFs of 100, 110, 121, 133, 146?
+         WACC is 10%, terminal growth 2.5%, net debt $500M, 100M shares.
+
+Claude:  [calls dcf_valuation tool]
+         Enterprise Value: $1,542,078
+         Equity Value: $1,042,078
+         Price per Share: $10.42
+         Terminal value is 70.5% of EV.
+```
+
+---
+
 ## Example Session
 
 ```

@@ -75,6 +75,7 @@ When analyzing a company, event, or market move, offer to show it through multip
 ```
 skills/          12 skill directories, each with SKILL.md + prompts/
 tools/           19 standalone Python calculators (stdlib-only, <200 lines each)
+mcp_server.py    MCP server exposing all tools for Claude Desktop
 docs/            Workflow documentation
 ETHOS.md         Finance AI philosophy
 ```
