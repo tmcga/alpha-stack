@@ -619,7 +619,6 @@ async def _mm(
     return _safe_call(optimal_quotes, mid_price, inventory, risk_aversion, volatility, time_remaining, order_intensity)
 
 
-<<<<<<< HEAD
 @mcp.tool(name="treasury_yield_curve")
 async def _treasury() -> str:
     """Fetch the latest US Treasury yield curve from treasury.gov (no API key needed).

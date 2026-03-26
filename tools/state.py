@@ -58,10 +58,11 @@ def load_session(name: str) -> dict:
         The full envelope (name, saved_at, tags, data) or error.
     """
     path = _path(name)
-    if not os.path.exists(path):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except FileNotFoundError:
         return {"error": f"Session '{name}' not found", "path": path}
-    with open(path) as f:
-        return json.load(f)
 
 
 def list_sessions() -> dict:
@@ -102,9 +103,10 @@ def delete_session(name: str) -> dict:
         Dict confirming deletion or error.
     """
     path = _path(name)
-    if not os.path.exists(path):
+    try:
+        os.remove(path)
+    except FileNotFoundError:
         return {"error": f"Session '{name}' not found"}
-    os.remove(path)
     return {"status": "deleted", "name": name, "path": path}
 
 
