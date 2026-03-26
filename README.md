@@ -1,17 +1,28 @@
 # Alpha Stack
 
+[![CI](https://github.com/tmcga/alpha-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/tmcga/alpha-stack/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Skills](https://img.shields.io/badge/skills-26-orange)
+![Tools](https://img.shields.io/badge/tools-19-purple)
+
 > What if every analyst had a senior MD's frameworks, a quant's toolkit, and a risk officer's discipline — loaded into their terminal?
 
-**Alpha Stack** is an installable AI skill system for finance. 26 skills covering every major Wall Street desk and corporate finance function, 19 computational tools with zero dependencies, and a structured workflow for investment analysis — from sourcing ideas to monitoring positions.
+**Alpha Stack** is an installable AI skill system for finance. 26 skills, 19 computational tools, and a structured workflow for investment analysis — from sourcing ideas to monitoring positions.
 
-It turns Claude Code into a **virtual finance team**: an M&A banker who builds merger models, a derivatives trader who thinks in Greeks, a portfolio manager who optimizes with Black-Litterman, and a risk officer who stress-tests everything with Monte Carlo.
+### Why Alpha Stack?
+
+- **Not prompts — pipelines.** Each skill is a 300-870 line execution pipeline with phased workflows, decision gates, and quality checks. Not a list of questions to ask.
+- **Real math, not vibes.** 19 Python tools that run DCF, Black-Scholes, Monte Carlo, Black-Litterman, and more. Every recommendation is backed by a calculation you can verify.
+- **Adversarial by default.** Every thesis gets a pre-mortem. Every valuation gets a sensitivity table. Every recommendation includes what kills it.
+- **Zero dependencies.** All tools are stdlib-only Python. Install in 30 seconds. No API keys, no accounts, no subscriptions.
 
 ---
 
 ## Install (30 seconds)
 
 ```bash
-git clone https://github.com/tmcga/alpha-prompts.git ~/alpha-stack
+git clone https://github.com/tmcga/alpha-stack.git ~/alpha-stack
 cd ~/alpha-stack && ./setup.sh
 ```
 
@@ -133,7 +144,7 @@ Alpha Stack is also a **finance MCP server** — 23 tools that Claude Desktop ca
 ### Setup
 
 ```bash
-git clone https://github.com/tmcga/alpha-prompts.git ~/alpha-stack
+git clone https://github.com/tmcga/alpha-stack.git ~/alpha-stack
 cd ~/alpha-stack && ./setup-mcp.sh
 ```
 
@@ -207,22 +218,17 @@ Claude: [calls kelly_criterion tool]
 
 ---
 
-## Example Session
+## See It In Action
 
-```
-You:     /sell-side
-Claude:  Sell-side M&A skill activated. What deal are you working on?
+Full annotated example outputs with real tool results:
 
-You:     Sell-side M&A for a $200M revenue specialty chemical company.
-         EBITDA: $60M, growing 8%. Net debt: $150M. 100M shares out.
+- **[Sell-Side M&A](examples/outputs/sell-side-chemicals.md)** — DCF valuation, LBO floor, buyer universe, risk matrix for a specialty chemical company
+- **[LBO Analysis](examples/outputs/lbo-software-buyout.md)** — Returns attribution, sensitivity tables, debt schedule for a cloud security buyout
+- **[Long/Short Equity](examples/outputs/long-short-semis.md)** — Variant perception thesis, Kelly sizing, catalyst calendar for semi equipment
+- **[Retirement Planning](examples/outputs/retirement-monte-carlo.md)** — Monte Carlo simulation, ruin probability, portfolio recommendations
+- **[Performance Attribution](examples/outputs/quarterly-attribution.md)** — Brinson-Fachler decomposition, CIO commentary
 
-Claude:  Let me build the valuation framework.
-         [Runs DCF, LBO, and WACC tools]
-         [Produces sensitivity tables]
-         [Generates buyer universe with strategic rationale]
-         [Stress-tests the downside: margin compression, cyclical risk]
-         [Delivers valuation range: $850M-$1.1B enterprise value]
-```
+Every skill also has a **ready-to-paste example scenario** in [`examples/`](examples/) — try any skill immediately without inventing data.
 
 ---
 
@@ -263,8 +269,8 @@ alpha-stack/
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on adding new skills, prompts, or tools.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on adding new skills, prompts, or tools. All contributions welcome — new prompt frameworks, additional tools, and skill improvements.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) — use it however you want.
