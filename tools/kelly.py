@@ -51,7 +51,7 @@ def kelly_criterion(win_prob: float, win_loss_ratio: float, fraction: float = 1.
 
     return {
         "full_kelly": full_kelly,
-        "applied_fraction": optimal_fraction,
+        "applied_fraction": max(0, optimal_fraction),
         "kelly_multiplier": fraction,
         "edge": edge,
         "geometric_growth_rate": geo_growth,
@@ -59,6 +59,7 @@ def kelly_criterion(win_prob: float, win_loss_ratio: float, fraction: float = 1.
         "win_loss_ratio": win_loss_ratio,
         "prob_50pct_drawdown": prob_50_dd,
         "prob_75pct_drawdown": prob_75_dd,
+        "signal": "bet" if full_kelly > 0 else "no_bet",
     }
 
 

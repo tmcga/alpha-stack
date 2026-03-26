@@ -138,6 +138,14 @@ class TestImpliedVol:
         iv = implied_volatility(bs["price"], 100, 105, 0.5, 0.05)
         assert abs(iv["implied_vol"] - 0.20) < 0.001
 
+    def test_zero_market_price_raises(self):
+        with pytest.raises(ValueError, match="Market price must be positive"):
+            implied_volatility(0, 100, 105, 0.5, 0.05)
+
+    def test_negative_market_price_raises(self):
+        with pytest.raises(ValueError, match="Market price must be positive"):
+            implied_volatility(-5, 100, 105, 0.5, 0.05)
+
     def test_moneyness(self):
         r = implied_volatility(5.0, 100, 110, 0.5, 0.05)
         assert abs(r["moneyness"] - 100 / 110) < 1e-6
@@ -274,6 +282,8 @@ class TestKelly:
     def test_no_edge(self):
         r = kelly_criterion(0.40, 1.0)
         assert r["full_kelly"] <= 0
+        assert r["signal"] == "no_bet"
+        assert r["applied_fraction"] == 0
 
     def test_half_kelly(self):
         r = kelly_criterion(0.55, 1.5, fraction=0.5)
@@ -405,6 +415,11 @@ class TestVCReturns:
         r = fund_metrics([10, 10, 10], [0, 0, 5], 30, 3)
         assert r["tvpi"] == pytest.approx((5 + 30) / 30, rel=0.01)
         assert r["dpi"] == pytest.approx(5 / 30, rel=0.01)
+
+    def test_zero_pre_money_raises(self):
+        rounds = [{"invested": 5e6, "pre_money": 0}]
+        with pytest.raises(ValueError, match="pre-money valuation must be positive"):
+            dilution_waterfall(rounds, 8000000)
 
     def test_dilution(self):
         rounds = [
