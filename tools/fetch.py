@@ -6,7 +6,9 @@ Usage: python fetch.py --treasury | python fetch.py --fred DGS10,FEDFUNDS
 
 import argparse
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta
+
+_UA = {"User-Agent": "AlphaStack/1.0"}
 
 
 def treasury_rates() -> dict:
@@ -17,12 +19,13 @@ def treasury_rates() -> dict:
         plus metadata (date, source).
     """
     try:
+        year = str(datetime.now().year)
         yc_url = (
             "https://home.treasury.gov/resource-center/data-chart-center/"
-            "interest-rates/daily-treasury-rates.csv/all/2025"
-            "?type=daily_treasury_yield_curve&field_tdr_date_value=2025&page&_format=csv"
+            f"interest-rates/daily-treasury-rates.csv/all/{year}"
+            f"?type=daily_treasury_yield_curve&field_tdr_date_value={year}&page&_format=csv"
         )
-        req = urllib.request.Request(yc_url, headers={"User-Agent": "AlphaStack/1.0"})
+        req = urllib.request.Request(yc_url, headers=_UA)
         with urllib.request.urlopen(req, timeout=15) as resp:
             lines = resp.read().decode().strip().split("\n")
 
@@ -68,10 +71,6 @@ def treasury_rates() -> dict:
 def fred_series(series_ids: list[str]) -> dict:
     """Fetch latest values from FRED (Federal Reserve Economic Data).
 
-    Uses the FRED public observations endpoint. No API key required for
-    the HTML scraping fallback; primary path uses the public JSON API
-    which requires a key. Falls back to a no-auth approach.
-
     Args:
         series_ids: List of FRED series IDs (e.g., ['DGS10', 'FEDFUNDS']).
 
@@ -82,8 +81,9 @@ def fred_series(series_ids: list[str]) -> dict:
     for sid in series_ids:
         sid = sid.strip().upper()
         try:
-            url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}&cosd=2024-01-01"
-            req = urllib.request.Request(url, headers={"User-Agent": "AlphaStack/1.0"})
+            start = (datetime.now() - timedelta(days=365)).strftime("%Y-%m-%d")
+            url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}&cosd={start}"
+            req = urllib.request.Request(url, headers=_UA)
             with urllib.request.urlopen(req, timeout=10) as resp:
                 lines = resp.read().decode().strip().split("\n")
 
