@@ -92,6 +92,8 @@ def multi_outcome_kelly(outcomes: list[tuple[float, float]]) -> dict:
     # Ternary search for optimal f (growth function is concave)
     lo, hi = 0.001, 0.999
     for _ in range(100):
+        if hi - lo < 1e-10:
+            break
         m1 = lo + (hi - lo) / 3
         m2 = hi - (hi - lo) / 3
         g1 = _growth_rate(m1, outcomes)
