@@ -238,7 +238,9 @@ async def _cb(
         stock_vol: Stock volatility (annualized)
         risk_free: Risk-free rate
     """
-    return _safe_call(cb_calc, face, coupon_rate, maturity, credit_spread, stock_price, conversion_ratio, stock_vol, risk_free)
+    return _safe_call(
+        cb_calc, face, coupon_rate, maturity, credit_spread, stock_price, conversion_ratio, stock_vol, risk_free
+    )
 
 
 # ── Fixed Income & Credit ──────────────────────────────────────────────────
@@ -484,7 +486,9 @@ async def _ma(
         cvr_value: Contingent value right face value (default 0)
         cvr_prob: Probability CVR pays out (default 0)
     """
-    return _safe_call(ma_calc, current_price, offer_price, days_to_close, risk_free, downside_price, cvr_value, cvr_prob)
+    return _safe_call(
+        ma_calc, current_price, offer_price, days_to_close, risk_free, downside_price, cvr_value, cvr_prob
+    )
 
 
 # ── Real Estate, VC & Lending ──────────────────────────────────────────────
