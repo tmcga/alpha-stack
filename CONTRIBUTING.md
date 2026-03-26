@@ -2,6 +2,18 @@
 
 Alpha Stack is built on three types of contributions: **skills**, **prompts**, and **tools**.
 
+## Quick Start: Scaffolding Scripts
+
+```bash
+# Create a new skill with SKILL.md template + prompts/ directory
+./scripts/new-skill.sh my-skill-name
+
+# Create a new tool with the standard argparse + function pattern
+./scripts/new-tool.sh my_tool_name
+```
+
+Both scripts create properly structured files matching existing conventions. Edit the generated files, then open a PR.
+
 ## Adding a Prompt
 
 Prompts live inside skill directories at `skills/<skill-name>/prompts/`.
