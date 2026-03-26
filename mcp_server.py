@@ -5,6 +5,7 @@ Exposes all Alpha Stack computational tools as MCP tools that Claude Desktop
 can invoke directly through natural language conversation.
 """
 
+import importlib
 import json
 import os
 import sys
@@ -15,26 +16,45 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "too
 
 from mcp.server.fastmcp import FastMCP
 
-# Import all tool functions
-from dcf import dcf_valuation
-from lbo import lbo_returns
-from wacc import wacc as wacc_calc
-from black_scholes import black_scholes as bs_calc
-from implied_vol import implied_volatility as iv_calc
-from convertible import convertible_bond as cb_calc
-from bond_yield import bond_analytics as bond_calc
-from merton_model import merton_model as merton_calc
-from credit_spread import altman_zscore, credit_from_spread
-from portfolio_risk import portfolio_metrics, benchmark_relative
-from kelly import kelly_criterion, multi_outcome_kelly
-from brinson import brinson_attribution
-from black_litterman import black_litterman as bl_calc
-from monte_carlo import monte_carlo_sim
-from merger_arb import merger_arb as ma_calc
-from cap_rate import real_estate_valuation
-from vc_returns import fund_metrics, dilution_waterfall
-from loan_amort import loan_amortization
-from market_maker import optimal_quotes
+
+# Lazy imports — each tool module is loaded on first invocation
+class _lazy:
+    __slots__ = ("_module", "_attr", "_fn")
+
+    def __init__(self, module: str, attr: str):
+        self._module = module
+        self._attr = attr
+        self._fn = None
+
+    def __call__(self, *args, **kwargs):
+        if self._fn is None:
+            self._fn = getattr(importlib.import_module(self._module), self._attr)
+        return self._fn(*args, **kwargs)
+
+
+dcf_valuation = _lazy("dcf", "dcf_valuation")
+lbo_returns = _lazy("lbo", "lbo_returns")
+wacc_calc = _lazy("wacc", "wacc")
+bs_calc = _lazy("black_scholes", "black_scholes")
+iv_calc = _lazy("implied_vol", "implied_volatility")
+cb_calc = _lazy("convertible", "convertible_bond")
+bond_calc = _lazy("bond_yield", "bond_analytics")
+merton_calc = _lazy("merton_model", "merton_model")
+altman_zscore = _lazy("credit_spread", "altman_zscore")
+credit_from_spread = _lazy("credit_spread", "credit_from_spread")
+portfolio_metrics = _lazy("portfolio_risk", "portfolio_metrics")
+benchmark_relative = _lazy("portfolio_risk", "benchmark_relative")
+kelly_criterion = _lazy("kelly", "kelly_criterion")
+multi_outcome_kelly = _lazy("kelly", "multi_outcome_kelly")
+brinson_attribution = _lazy("brinson", "brinson_attribution")
+bl_calc = _lazy("black_litterman", "black_litterman")
+monte_carlo_sim = _lazy("monte_carlo", "monte_carlo_sim")
+ma_calc = _lazy("merger_arb", "merger_arb")
+real_estate_valuation = _lazy("cap_rate", "real_estate_valuation")
+fund_metrics = _lazy("vc_returns", "fund_metrics")
+dilution_waterfall = _lazy("vc_returns", "dilution_waterfall")
+loan_amortization = _lazy("loan_amort", "loan_amortization")
+optimal_quotes = _lazy("market_maker", "optimal_quotes")
 
 mcp = FastMCP("alpha-stack")
 

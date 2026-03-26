@@ -43,7 +43,11 @@ def mat_transpose(A: list[list[float]]) -> list[list[float]]:
 
 
 def mat_inverse(A: list[list[float]]) -> list[list[float]]:
-    """Gauss-Jordan matrix inverse."""
+    """Gauss-Jordan matrix inverse (O(n^3), stdlib-only).
+
+    Adequate for typical portfolio sizes (n < 50 assets).
+    For larger matrices, consider numpy.linalg.inv.
+    """
     n = len(A)
     M = [row[:] + [1.0 if i == j else 0.0 for j in range(n)] for i, row in enumerate(A)]
     for col in range(n):
