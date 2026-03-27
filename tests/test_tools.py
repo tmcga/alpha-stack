@@ -624,3 +624,144 @@ class TestChain:
         assert "metrics" in r
         assert "kelly" in r
         assert r["kelly"]["full_kelly"] > 0
+
+
+class TestREDebt:
+    def test_debt_sizing_ltv_binds(self):
+        from re_debt import debt_sizing
+
+        r = debt_sizing(1800000, 28000000, 0.0625, max_ltv=0.65, min_dscr=1.25)
+        assert r["binding_constraint"] == "ltv"
+        assert r["max_loan"] == pytest.approx(28000000 * 0.65)
+        assert r["actual_dscr"] > 1.25
+
+    def test_debt_sizing_dscr_binds(self):
+        from re_debt import debt_sizing
+
+        r = debt_sizing(500000, 28000000, 0.07, max_ltv=0.90, min_dscr=1.25)
+        assert r["binding_constraint"] == "dscr"
+        assert r["max_loan"] < 28000000 * 0.90
+
+    def test_positive_leverage(self):
+        from re_debt import debt_sizing
+
+        r = debt_sizing(2000000, 28000000, 0.05, max_ltv=0.65)
+        assert r["positive_leverage"] is True
+
+    def test_multi_tranche(self):
+        from re_debt import multi_tranche
+
+        r = multi_tranche(
+            2000000,
+            30000000,
+            [
+                {"name": "Senior", "amount": 18000000, "rate": 0.06, "amort_years": 30},
+                {"name": "Mezz", "amount": 4000000, "rate": 0.12, "amort_years": 0},
+            ],
+        )
+        assert len(r["tranches"]) == 2
+        assert r["total_debt"] == 22000000
+        assert r["blended_dscr"] > 0
+
+
+class TestREWaterfall:
+    def test_basic_waterfall(self):
+        from re_waterfall import equity_waterfall
+
+        r = equity_waterfall(10000000, [800000, 900000, 1000000, 1100000, 15000000])
+        assert r["project_irr"] > 0
+        assert r["lp_multiple"] > 1.0
+        assert r["gp_multiple"] > r["lp_multiple"]  # GP gets promote
+        assert len(r["yearly"]) == 5
+
+    def test_lp_gp_sum(self):
+        from re_waterfall import equity_waterfall
+
+        cfs = [500000, 600000, 12000000]
+        r = equity_waterfall(8000000, cfs)
+        total_dist = sum(y["lp_distribution"] + y["gp_distribution"] for y in r["yearly"])
+        assert total_dist == pytest.approx(sum(cfs), rel=0.01)
+
+
+class TestREDevelopment:
+    def test_development_proforma(self):
+        from re_development import development_proforma
+
+        r = development_proforma(5000000, 25000000, stabilized_noi=3200000, exit_cap_rate=0.055)
+        assert r["yield_on_cost"] > r["exit_cap_rate"]  # Positive dev spread
+        assert r["development_spread_bps"] > 0
+        assert r["profit"] > 0
+        assert r["equity_multiple"] > 1.0
+
+    def test_zero_noi_no_crash(self):
+        from re_development import development_proforma
+
+        r = development_proforma(1000000, 5000000, stabilized_noi=0, exit_cap_rate=0.05)
+        assert r["profit"] < 0  # No income = loss
+
+
+class TestRENoi:
+    def test_noi_builder(self):
+        from re_noi import noi_builder
+
+        r = noi_builder(240, 1280, occupancy=0.95)
+        assert r["year_1_noi"] > 0
+        assert r["noi_per_unit"] > 0
+        assert len(r["projections"]) == 5
+        assert r["breakeven_occupancy"] < 0.95
+
+    def test_noi_grows(self):
+        from re_noi import noi_builder
+
+        r = noi_builder(100, 1500, rent_growth=0.05, projection_years=3)
+        assert r["projections"][2]["noi"] > r["projections"][0]["noi"]
+
+
+class TestIRR:
+    def test_basic_irr(self):
+        from irr import irr_solve
+
+        r = irr_solve([-1000, 200, 300, 400, 500])
+        assert r["irr"] is not None
+        assert r["converged"] is True
+        assert r["moic"] == pytest.approx(1.4, abs=0.01)
+
+    def test_payback(self):
+        from irr import irr_solve
+
+        r = irr_solve([-1000, 500, 500, 500])
+        assert r["payback_years"] is not None
+        assert r["payback_years"] < 3.0
+
+    def test_npv_at_irr_is_zero(self):
+        from irr import irr_solve, npv
+
+        cfs = [-1000, 300, 400, 500, 200]
+        r = irr_solve(cfs)
+        n = npv(cfs, r["irr"])
+        assert abs(n["npv"]) < 1.0  # NPV at IRR should be ~0
+
+
+class TestDepreciation:
+    def test_straight_line(self):
+        from depreciation import straight_line
+
+        r = straight_line(100000, 10000, 10)
+        assert r["annual_depreciation"] == 9000
+        assert len(r["schedule"]) == 10
+        assert r["schedule"][-1]["book_value"] == pytest.approx(10000)
+
+    def test_macrs_7yr(self):
+        from depreciation import macrs
+
+        r = macrs(100000, 7)
+        assert len(r["schedule"]) == 8  # 7-year MACRS has 8 entries
+        total = sum(s["depreciation"] for s in r["schedule"])
+        assert total == pytest.approx(100000, rel=0.01)
+
+    def test_macrs_bonus(self):
+        from depreciation import macrs
+
+        r = macrs(100000, 7, bonus_pct=0.60)
+        assert r["bonus_depreciation"] == 60000
+        assert r["first_year_deduction"] > 60000  # Bonus + year 1 MACRS

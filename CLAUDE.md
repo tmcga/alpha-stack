@@ -158,6 +158,12 @@ When a user's question involves quantitative analysis, run the relevant Python t
 | Treasury yield curve, risk-free rate | `python3 tools/fetch.py --treasury` |
 | Economic data (fed funds, CPI, VIX) | `python3 tools/fetch.py --fred DGS10,FEDFUNDS` |
 | Save/load analysis results | `python3 tools/state.py` |
+| RE debt sizing, DSCR, LTV, debt yield | `python3 tools/re_debt.py` |
+| RE equity waterfall, GP/LP promote | `python3 tools/re_waterfall.py` |
+| RE development pro forma, yield on cost | `python3 tools/re_development.py` |
+| RE NOI builder, rent roll projections | `python3 tools/re_noi.py` |
+| IRR, NPV, MOIC, payback period | `python3 tools/irr.py` |
+| Depreciation (straight-line, MACRS) | `python3 tools/depreciation.py` |
 
 ## Output Standards
 
