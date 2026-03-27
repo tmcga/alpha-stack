@@ -63,6 +63,15 @@ list_sessions_fn = _lazy("state", "list_sessions")
 delete_session = _lazy("state", "delete_session")
 valuation_triangle = _lazy("chain", "valuation_triangle")
 credit_full = _lazy("chain", "credit_full")
+debt_sizing = _lazy("re_debt", "debt_sizing")
+multi_tranche = _lazy("re_debt", "multi_tranche")
+equity_waterfall_fn = _lazy("re_waterfall", "equity_waterfall")
+development_proforma = _lazy("re_development", "development_proforma")
+noi_builder = _lazy("re_noi", "noi_builder")
+irr_solve = _lazy("irr", "irr_solve")
+npv_fn = _lazy("irr", "npv")
+straight_line_dep = _lazy("depreciation", "straight_line")
+macrs_dep = _lazy("depreciation", "macrs")
 
 mcp = FastMCP("alpha-stack")
 
@@ -742,6 +751,133 @@ async def _cred_full(
         asset_vol: Asset volatility (default 0.30)
     """
     return _safe_call(credit_full, revenue, ebitda, total_debt, equity_value, asset_vol)
+
+
+@mcp.tool(name="re_debt_sizing")
+async def _re_debt(
+    noi: float,
+    property_value: float,
+    rate: float,
+    amort_years: int = 30,
+    max_ltv: float = 0.75,
+    min_dscr: float = 1.25,
+    max_debt_yield: float | None = None,
+) -> str:
+    """Size max RE loan from DSCR, LTV, and debt yield constraints. Shows binding constraint.
+
+    Args:
+        noi: Annual net operating income
+        property_value: Property value or purchase price
+        rate: Interest rate (e.g., 0.065)
+        amort_years: Amortization in years (default 30)
+        max_ltv: Max loan-to-value (default 0.75)
+        min_dscr: Min debt service coverage (default 1.25)
+        max_debt_yield: Max debt yield constraint (optional)
+    """
+    return _safe_call(debt_sizing, noi, property_value, rate, amort_years, max_ltv, min_dscr, max_debt_yield)
+
+
+@mcp.tool(name="re_equity_waterfall")
+async def _re_wf(
+    equity_invested: float,
+    cash_flows: list[float],
+    lp_share: float = 0.90,
+    pref_rate: float = 0.08,
+) -> str:
+    """GP/LP equity waterfall with preferred return and promote tiers.
+
+    Args:
+        equity_invested: Total equity (LP + GP)
+        cash_flows: Annual cash flows after debt service
+        lp_share: LP share of equity (default 0.90)
+        pref_rate: Preferred return rate (default 0.08)
+    """
+    return _safe_call(equity_waterfall_fn, equity_invested, cash_flows, lp_share, pref_rate)
+
+
+@mcp.tool(name="re_development")
+async def _re_dev(
+    land_cost: float,
+    hard_costs: float,
+    stabilized_noi: float,
+    exit_cap_rate: float = 0.055,
+    soft_cost_pct: float = 0.20,
+    construction_months: int = 18,
+    equity_pct: float = 0.35,
+) -> str:
+    """Development pro forma — land through stabilization with yield on cost and profit metrics.
+
+    Args:
+        land_cost: Land acquisition cost
+        hard_costs: Construction hard costs
+        stabilized_noi: Annual NOI at stabilization
+        exit_cap_rate: Cap rate for value (default 0.055)
+        soft_cost_pct: Soft costs as pct of hard (default 0.20)
+        construction_months: Build time (default 18)
+        equity_pct: Developer equity pct (default 0.35)
+    """
+    return _safe_call(
+        development_proforma,
+        land_cost,
+        hard_costs,
+        soft_cost_pct,
+        construction_months=construction_months,
+        stabilized_noi=stabilized_noi,
+        exit_cap_rate=exit_cap_rate,
+        equity_pct=equity_pct,
+    )
+
+
+@mcp.tool(name="re_noi_builder")
+async def _re_noi(
+    units: int,
+    avg_rent_monthly: float,
+    occupancy: float = 0.95,
+    opex_ratio: float = 0.40,
+    rent_growth: float = 0.03,
+    projection_years: int = 5,
+) -> str:
+    """Build NOI from rent roll fundamentals and project forward.
+
+    Args:
+        units: Number of units
+        avg_rent_monthly: Average monthly rent per unit
+        occupancy: Occupancy rate (default 0.95)
+        opex_ratio: Operating expenses as pct of EGI (default 0.40)
+        rent_growth: Annual rent growth (default 0.03)
+        projection_years: Years to project (default 5)
+    """
+    return _safe_call(
+        noi_builder,
+        units,
+        avg_rent_monthly,
+        occupancy,
+        opex_ratio=opex_ratio,
+        rent_growth=rent_growth,
+        projection_years=projection_years,
+    )
+
+
+@mcp.tool(name="irr_npv")
+async def _irr(cash_flows: list[float]) -> str:
+    """Calculate IRR, NPV at multiple rates, MOIC, and payback period for any cash flow stream.
+
+    Args:
+        cash_flows: Cash flows where index 0 is time 0 (typically negative for investment)
+    """
+    return _safe_call(irr_solve, cash_flows)
+
+
+@mcp.tool(name="depreciation_macrs")
+async def _dep(cost: float, recovery_period: int, bonus_pct: float = 0.0) -> str:
+    """MACRS depreciation schedule with optional bonus depreciation.
+
+    Args:
+        cost: Asset cost basis
+        recovery_period: MACRS class life (5, 7, 15, 27, or 39 years)
+        bonus_pct: Bonus depreciation pct (e.g., 0.60 for 60%)
+    """
+    return _safe_call(macrs_dep, cost, recovery_period, bonus_pct)
 
 
 if __name__ == "__main__":
