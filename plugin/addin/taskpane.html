@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Stack</title>
+    <link rel="stylesheet" href="taskpane.css">
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+</head>
+<body>
+    <div id="header">
+        <span>ALPHA STACK</span>
+        <span class="version">v1.0</span>
+    </div>
+
+    <div id="tab-bar">
+        <button class="tab-btn active" data-tab="tools">Tools</button>
+        <button class="tab-btn" data-tab="sens">Sens</button>
+        <button class="tab-btn" data-tab="scenarios">Scenarios</button>
+        <button class="tab-btn" data-tab="templates">Templates</button>
+        <button class="tab-btn" data-tab="audit">Audit</button>
+        <button class="tab-btn" data-tab="library">Library</button>
+    </div>
+
+    <!-- ── Tools Tab ── -->
+    <div id="tools-tab" class="tab-panel active">
+        <div class="form-group">
+            <label>Category</label>
+            <select id="tool-category">
+                <option value="">Select category...</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Tool</label>
+            <select id="tool-select" disabled>
+                <option value="">Select tool...</option>
+            </select>
+        </div>
+
+        <div id="param-form"></div>
+
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-run" disabled>Run</button>
+            <button class="btn btn-write" id="btn-write" disabled>Write to Sheet</button>
+            <button class="btn" id="btn-save-session" disabled>Save</button>
+        </div>
+
+        <div id="result-preview">
+            <span class="label">Select a tool and enter parameters to get started.</span>
+        </div>
+    </div>
+
+    <!-- ── Sensitivity Tab ── -->
+    <div id="sens-tab" class="tab-panel">
+        <div class="section-header">Sensitivity Table Generator</div>
+        <p class="hint-text">Generate a 2D sensitivity grid for any tool by varying two parameters.</p>
+
+        <div class="form-group">
+            <label>Tool</label>
+            <select id="sens-tool">
+                <option value="">Select tool...</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Output Metric</label>
+            <select id="sens-output">
+                <option value="">Run tool first...</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Row Variable</label>
+            <select id="sens-row-param">
+                <option value="">Select parameter...</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Row Values (comma-separated)</label>
+            <input type="text" id="sens-row-values" placeholder="e.g. 0.08, 0.09, 0.10, 0.11, 0.12">
+        </div>
+        <div class="form-group">
+            <label>Column Variable</label>
+            <select id="sens-col-param">
+                <option value="">Select parameter...</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Column Values (comma-separated)</label>
+            <input type="text" id="sens-col-values" placeholder="e.g. 0.020, 0.025, 0.030, 0.035">
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-sens-generate">Generate Table</button>
+            <button class="btn btn-write" id="btn-sens-write">Write to Sheet</button>
+        </div>
+
+        <div id="sens-preview"></div>
+    </div>
+
+    <!-- ── Scenarios Tab ── -->
+    <div id="scenarios-tab" class="tab-panel">
+        <div class="section-header">Scenario Manager</div>
+        <p class="hint-text">Define and toggle between assumption scenarios (Base / Bull / Bear).</p>
+
+        <div class="form-group">
+            <label>Current Scenario</label>
+            <select id="scenario-select">
+                <option value="base">Base Case</option>
+            </select>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-scenario-new">New Scenario</button>
+            <button class="btn" id="btn-scenario-compare">Compare All</button>
+        </div>
+
+        <div id="scenario-editor" style="display: none;">
+            <div class="form-group">
+                <label>Scenario Name</label>
+                <input type="text" id="scenario-name" placeholder="e.g. Bear Case">
+            </div>
+            <div id="scenario-overrides"></div>
+            <div class="btn-row">
+                <button class="btn btn-primary" id="btn-scenario-save">Save Scenario</button>
+                <button class="btn" id="btn-scenario-cancel">Cancel</button>
+            </div>
+        </div>
+
+        <div id="scenario-preview"></div>
+    </div>
+
+    <!-- ── Templates Tab ── -->
+    <div id="templates-tab" class="tab-panel">
+        <div class="template-grid" id="template-grid">
+            <div class="loading"><span class="spinner"></span>Loading templates...</div>
+        </div>
+    </div>
+
+    <!-- ── Audit Tab ── -->
+    <div id="audit-tab" class="tab-panel">
+        <div class="section-header">Model Audit</div>
+        <p class="hint-text">Scan the active sheet for common model errors and integrity issues.</p>
+
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-audit-run">Run Audit</button>
+            <button class="btn btn-write" id="btn-audit-write">Write Report to Sheet</button>
+        </div>
+
+        <div id="audit-results">
+            <span class="label">Click "Run Audit" to scan the active sheet.</span>
+        </div>
+    </div>
+
+    <!-- ── Library Tab ── -->
+    <div id="library-tab" class="tab-panel">
+        <div class="section-header">Snapshots</div>
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-snapshot">Take Snapshot</button>
+            <button class="btn" id="btn-snapshot-diff">Diff Two Snapshots</button>
+        </div>
+        <div id="snapshots-list"></div>
+
+        <div class="section-header" style="margin-top: 16px;">Saved Sessions</div>
+        <div id="sessions-list">
+            <div class="loading"><span class="spinner"></span>Loading...</div>
+        </div>
+
+        <div class="section-header" style="margin-top: 16px;">Wiki Search</div>
+        <div class="form-group">
+            <input type="text" id="wiki-search" placeholder="Search entities, playbooks...">
+        </div>
+        <div id="wiki-results"></div>
+    </div>
+
+    <div id="status-bar">
+        <span id="status-text" class="disconnected">Connecting...</span>
+        <span id="tool-count"></span>
+    </div>
+
+    <script src="taskpane.js"></script>
+</body>
+</html>

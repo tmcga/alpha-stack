@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/appforoffice/1.0"
+           xsi:type="TaskPaneApp">
+
+  <Id>a1f4a5e0-c3d2-4b8f-9a1e-7f6d5e4c3b2a</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Alpha Stack</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Alpha Stack"/>
+  <Description DefaultValue="Finance AI tools for Excel — LBO, DCF, debt sizing, portfolio risk, and more."/>
+  <SupportUrl DefaultValue="https://github.com/tmcga/alpha-stack"/>
+
+  <AppDomains>
+    <AppDomain>http://localhost:8765</AppDomain>
+    <AppDomain>https://localhost:8765</AppDomain>
+  </AppDomains>
+
+  <Hosts>
+    <Host Name="Workbook"/>
+  </Hosts>
+
+  <Requirements>
+    <Sets>
+      <Set Name="ExcelApi" MinVersion="1.1"/>
+    </Sets>
+  </Requirements>
+
+  <DefaultSettings>
+    <SourceLocation DefaultValue="http://localhost:8765/addin/taskpane.html"/>
+  </DefaultSettings>
+
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Workbook">
+        <DesktopFormFactor>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <CustomTab id="AlphaStackTab">
+              <Group id="AlphaStackGroup">
+                <Label resid="GroupLabel"/>
+                <Control xsi:type="Button" id="ShowTaskpane">
+                  <Label resid="ButtonLabel"/>
+                  <Supertip>
+                    <Title resid="ButtonLabel"/>
+                    <Description resid="ButtonDescription"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon16"/>
+                    <bt:Image size="32" resid="Icon32"/>
+                    <bt:Image size="80" resid="Icon80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>AlphaStackPane</TaskpaneId>
+                    <SourceLocation resid="TaskpaneUrl"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Label resid="TabLabel"/>
+            </CustomTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon16" DefaultValue="http://localhost:8765/addin/assets/icon-16.png"/>
+        <bt:Image id="Icon32" DefaultValue="http://localhost:8765/addin/assets/icon-32.png"/>
+        <bt:Image id="Icon80" DefaultValue="http://localhost:8765/addin/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="TaskpaneUrl" DefaultValue="http://localhost:8765/addin/taskpane.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="TabLabel" DefaultValue="Alpha Stack"/>
+        <bt:String id="GroupLabel" DefaultValue="Finance Tools"/>
+        <bt:String id="ButtonLabel" DefaultValue="Alpha Stack"/>
+        <bt:String id="ButtonDescription" DefaultValue="Open the Alpha Stack finance tools sidebar"/>
+      </bt:ShortStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

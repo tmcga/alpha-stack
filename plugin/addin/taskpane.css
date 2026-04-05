@@ -1,0 +1,511 @@
+/* Alpha Stack Excel Add-in — Professional banker-grade theme */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    color: #1a2332;
+    background: #ffffff;
+    overflow-x: hidden;
+}
+
+/* ── Header ── */
+#header {
+    background: #1a2332;
+    color: #ffffff;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-bottom: 3px solid #ff9900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#header .version {
+    font-size: 10px;
+    color: #8899aa;
+    font-weight: 400;
+}
+
+/* ── Tab bar ── */
+#tab-bar {
+    display: flex;
+    background: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    color: #666666;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+}
+
+.tab-btn:hover {
+    color: #1a2332;
+    background: #eeeeee;
+}
+
+.tab-btn.active {
+    color: #1a2332;
+    border-bottom-color: #ff9900;
+    font-weight: 600;
+}
+
+/* ── Tab content ── */
+.tab-panel {
+    display: none;
+    padding: 16px;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+/* ── Tool selector ── */
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.form-group select,
+.form-group input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #1a2332;
+    background: #ffffff;
+    transition: border-color 0.15s;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #ff9900;
+    box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.15);
+}
+
+.form-group input::placeholder {
+    color: #aaaaaa;
+}
+
+.form-group .hint {
+    font-size: 10px;
+    color: #999999;
+    margin-top: 2px;
+}
+
+.required-mark {
+    color: #cc0000;
+    margin-left: 2px;
+}
+
+/* ── Input cells (template yellow) ── */
+.input-cell {
+    background: #fff2cc !important;
+    font-weight: 500;
+}
+
+/* ── Buttons ── */
+.btn-row {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #ffffff;
+    color: #1a2332;
+}
+
+.btn:hover {
+    background: #f5f5f5;
+}
+
+.btn-primary {
+    background: #ff9900;
+    color: #1a2332;
+    border-color: #ff9900;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #e68a00;
+}
+
+.btn-write {
+    background: #1a2332;
+    color: #ffffff;
+    border-color: #1a2332;
+}
+
+.btn-write:hover {
+    background: #2a3342;
+}
+
+/* ── Result preview ── */
+#result-preview {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 12px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+#result-preview .label {
+    color: #808080;
+}
+
+#result-preview .value {
+    color: #1a2332;
+    font-weight: 600;
+}
+
+#result-preview .positive {
+    color: #007a33;
+}
+
+#result-preview .negative {
+    color: #cc0000;
+}
+
+#result-preview .section {
+    color: #ff9900;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+/* ── Template cards ── */
+.template-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.template-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.template-card:hover {
+    border-color: #ff9900;
+    box-shadow: 0 2px 8px rgba(255, 153, 0, 0.15);
+}
+
+.template-card .name {
+    font-weight: 600;
+    font-size: 13px;
+    color: #1a2332;
+}
+
+.template-card .desc {
+    font-size: 11px;
+    color: #888888;
+    margin-top: 4px;
+}
+
+.template-card .sheets {
+    font-size: 10px;
+    color: #aaaaaa;
+    margin-top: 6px;
+}
+
+/* ── Library ── */
+.session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+
+.session-item:hover {
+    background: #f9f9f9;
+}
+
+.session-item .name {
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.session-item .date {
+    font-size: 11px;
+    color: #888888;
+}
+
+.session-item .tags {
+    font-size: 10px;
+    color: #ff9900;
+}
+
+/* ── Status bar ── */
+#status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #f5f5f5;
+    border-top: 1px solid #e0e0e0;
+    padding: 6px 16px;
+    font-size: 10px;
+    color: #888888;
+    display: flex;
+    justify-content: space-between;
+}
+
+#status-bar .connected {
+    color: #007a33;
+}
+
+#status-bar .disconnected {
+    color: #cc0000;
+}
+
+/* ── Param form ── */
+#param-form {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 8px;
+}
+
+/* ── Loading ── */
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #888888;
+}
+
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e0e0e0;
+    border-top-color: #ff9900;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Sensitivity ── */
+.sens-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-top: 8px;
+}
+
+.sens-table th,
+.sens-table td {
+    padding: 4px 8px;
+    text-align: right;
+    border: 1px solid #e0e0e0;
+}
+
+.sens-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #666666;
+}
+
+.sens-table .base-case {
+    background: #fff2cc;
+    font-weight: 700;
+}
+
+/* ── Section headers ── */
+.section-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2332;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #ff9900;
+}
+
+.hint-text {
+    font-size: 11px;
+    color: #888888;
+    margin-bottom: 12px;
+}
+
+/* ── Audit results ── */
+.audit-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.audit-item .severity {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.audit-item .severity.error {
+    background: #ffebee;
+    color: #cc0000;
+}
+
+.audit-item .severity.warning {
+    background: #fff8e1;
+    color: #e68a00;
+}
+
+.audit-item .severity.info {
+    background: #e8f5e9;
+    color: #007a33;
+}
+
+.audit-item .cell-ref {
+    font-family: "Cascadia Code", "SF Mono", monospace;
+    font-size: 11px;
+    color: #0000cc;
+    cursor: pointer;
+}
+
+.audit-item .cell-ref:hover {
+    text-decoration: underline;
+}
+
+.audit-item .message {
+    font-size: 12px;
+    color: #1a2332;
+    margin-top: 2px;
+}
+
+/* ── Scenario overrides ── */
+.override-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.override-row label {
+    flex: 1;
+    font-size: 11px;
+    color: #666666;
+}
+
+.override-row input {
+    width: 80px;
+    padding: 4px 6px;
+    font-size: 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 3px;
+}
+
+/* ── Snapshot items ── */
+.snapshot-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.snapshot-item:hover {
+    background: #f9f9f9;
+}
+
+.snapshot-item .snap-name {
+    font-weight: 500;
+}
+
+.snapshot-item .snap-date {
+    font-size: 10px;
+    color: #888888;
+}
+
+/* ── Diff table ── */
+.diff-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-top: 8px;
+}
+
+.diff-table th, .diff-table td {
+    padding: 4px 8px;
+    border: 1px solid #e0e0e0;
+    text-align: right;
+}
+
+.diff-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #666666;
+    text-align: left;
+}
+
+.diff-table .changed {
+    background: #fff8e1;
+}
+
+.diff-table .delta-positive {
+    color: #007a33;
+}
+
+.diff-table .delta-negative {
+    color: #cc0000;
+}
+
+/* ── Tab bar responsiveness (more tabs) ── */
+.tab-btn {
+    padding: 10px 4px;
+    font-size: 11px;
+}
+
+/* ── Ensure content doesn't overlap status bar ── */
+.tab-panel {
+    padding-bottom: 40px;
+}
