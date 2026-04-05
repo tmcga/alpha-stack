@@ -98,6 +98,11 @@ This is **Alpha Stack** — an installable AI skill system for finance. 26 skill
 | `/audit` | audit | Risk assessment, materiality, substantive testing, controls, sampling, management letter |
 | `/data-entry` | data-entry | Financial data extraction, cleaning, normalization, validation, tool-ready formatting |
 
+**Knowledge Base**
+| Command | Skill | What It Does |
+|---------|-------|-------------|
+| `/wiki` | wiki | Personal finance knowledge base — ingest, query, lint, institutional memory |
+
 ## Skill Router
 
 When a user describes a problem without invoking a specific skill, match their intent and suggest the right skill. Use this decision tree:
@@ -190,6 +195,12 @@ When a user describes a problem without invoking a specific skill, match their i
 **"Quant" / "Signal" / "Backtest" / "Alpha"**
 - Signal development or backtesting → `/quant`
 
+**"What do I know about" / "Prior analysis" / "Knowledge base" / "Wiki"**
+- Recall prior research on a company or topic → `/wiki` (query mode)
+- Save current analysis findings → `/wiki` (ingest mode)
+- Check knowledge base health → `/wiki` (lint mode)
+- Track methodology preferences → `/wiki` (playbook mode)
+
 **When ambiguous:** Ask the user one clarifying question — "Are you looking at this as a [buyer/seller/trader/risk manager]?" The answer determines the skill.
 
 ## The Alpha Stack Workflow
@@ -201,7 +212,7 @@ Every analysis follows six phases: **Source > Diligence > Model > Stress > Decid
 3. **Model** — Build the quantitative framework. Run Python tools, construct sensitivity tables.
 4. **Stress** — Challenge every assumption. Pre-mortem, tail risk, Monte Carlo scenarios.
 5. **Decide** — Synthesize into a recommendation with explicit risk/reward and conviction level.
-6. **Monitor** — Define tracking criteria: thesis drift, catalysts, exit triggers, rebalancing rules.
+6. **Monitor** — Define tracking criteria: thesis drift, catalysts, exit triggers, rebalancing rules. When the wiki is active, completed analyses are filed to the knowledge base (entity update + journal entry), creating persistent institutional memory that informs future Source phases.
 
 ## Tool Invocation
 
@@ -237,6 +248,7 @@ When a user's question involves quantitative analysis, run the relevant Python t
 | RE NOI builder, rent roll projections | `python3 tools/re_noi.py` |
 | IRR, NPV, MOIC, payback period | `python3 tools/irr.py` |
 | Depreciation (straight-line, MACRS) | `python3 tools/depreciation.py` |
+| Wiki knowledge base (init, search, ingest, lint) | `python3 tools/wiki.py` |
 
 ## Output Standards
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Alpha Stack MCP Server — 23 finance tools for Claude Desktop.
+"""Alpha Stack MCP Server — finance tools for Claude Desktop.
 
 Exposes all Alpha Stack computational tools as MCP tools that Claude Desktop
 can invoke directly through natural language conversation.
@@ -72,6 +72,14 @@ irr_solve = _lazy("irr", "irr_solve")
 npv_fn = _lazy("irr", "npv")
 straight_line_dep = _lazy("depreciation", "straight_line")
 macrs_dep = _lazy("depreciation", "macrs")
+wiki_init_fn = _lazy("wiki", "wiki_init")
+wiki_status_fn = _lazy("wiki", "wiki_status")
+wiki_create_page_fn = _lazy("wiki", "wiki_create_page")
+wiki_read_page_fn = _lazy("wiki", "wiki_read_page")
+wiki_update_page_fn = _lazy("wiki", "wiki_update_page")
+wiki_search_fn = _lazy("wiki", "wiki_search")
+wiki_list_pages_fn = _lazy("wiki", "wiki_list_pages")
+wiki_lint_fn = _lazy("wiki", "wiki_lint")
 
 mcp = FastMCP("alpha-stack")
 
@@ -878,6 +886,89 @@ async def _dep(cost: float, recovery_period: int, bonus_pct: float = 0.0) -> str
         bonus_pct: Bonus depreciation pct (e.g., 0.60 for 60%)
     """
     return _safe_call(macrs_dep, cost, recovery_period, bonus_pct)
+
+
+# ── Wiki Knowledge Base ───────────────────────────────────────────────────
+
+
+@mcp.tool(name="wiki_init")
+async def _wiki_init() -> str:
+    """Initialize the personal finance wiki at ~/.alpha-stack/wiki/.
+
+    Creates directories for entities, playbooks, journal, and raw sources.
+    Copies the default schema template. Idempotent — safe to re-run.
+    """
+    return _safe_call(wiki_init_fn)
+
+
+@mcp.tool(name="wiki_status")
+async def _wiki_status() -> str:
+    """Show wiki health dashboard — page counts, size, last activity."""
+    return _safe_call(wiki_status_fn)
+
+
+@mcp.tool(name="wiki_create_page")
+async def _wiki_create(category: str, slug: str, content: str, summary: str) -> str:
+    """Create a new wiki page.
+
+    Args:
+        category: Page category — entities, playbooks, journal, or raw
+        slug: Page identifier (e.g. 'aapl', 'dcf-assumptions', 'aapl-lbo-2026-04')
+        content: Full markdown content for the page
+        summary: One-line summary for the index
+    """
+    return _safe_call(wiki_create_page_fn, category, slug, content, summary)
+
+
+@mcp.tool(name="wiki_read_page")
+async def _wiki_read(category: str, slug: str) -> str:
+    """Read a wiki page and return its content.
+
+    Args:
+        category: Page category — entities, playbooks, journal, or raw
+        slug: Page identifier
+    """
+    return _safe_call(wiki_read_page_fn, category, slug)
+
+
+@mcp.tool(name="wiki_update_page")
+async def _wiki_update(category: str, slug: str, content: str, summary: str | None = None) -> str:
+    """Update an existing wiki page.
+
+    Args:
+        category: Page category — entities, playbooks, journal, or raw
+        slug: Page identifier
+        content: New full markdown content
+        summary: Updated one-line summary for index (optional)
+    """
+    return _safe_call(wiki_update_page_fn, category, slug, content, summary)
+
+
+@mcp.tool(name="wiki_search")
+async def _wiki_search(query: str, category: str | None = None) -> str:
+    """Search wiki pages by content and filename.
+
+    Args:
+        query: Search term (case-insensitive substring match)
+        category: Restrict search to one category (optional)
+    """
+    return _safe_call(wiki_search_fn, query, category)
+
+
+@mcp.tool(name="wiki_list_pages")
+async def _wiki_list(category: str | None = None) -> str:
+    """List all wiki pages with metadata.
+
+    Args:
+        category: Filter to one category (optional)
+    """
+    return _safe_call(wiki_list_pages_fn, category)
+
+
+@mcp.tool(name="wiki_lint")
+async def _wiki_lint() -> str:
+    """Health-check the wiki for orphan pages, dead links, stale content, and missing cross-references."""
+    return _safe_call(wiki_lint_fn)
 
 
 if __name__ == "__main__":

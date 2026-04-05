@@ -1,4 +1,4 @@
-"""Test suite for all 19 Alpha Stack finance tools (23 functions)."""
+"""Test suite for Alpha Stack finance tools."""
 
 import sys
 import os
@@ -765,3 +765,155 @@ class TestDepreciation:
         r = macrs(100000, 7, bonus_pct=0.60)
         assert r["bonus_depreciation"] == 60000
         assert r["first_year_deduction"] > 60000  # Bonus + year 1 MACRS
+
+
+# ── Wiki Knowledge Base ──────────────────────────────────────────────────
+
+
+class TestWiki:
+    """Tests for wiki.py — personal finance knowledge base."""
+
+    def _patch(self, tmp_path, monkeypatch):
+        import wiki
+
+        wiki_dir = str(tmp_path / "wiki")
+        monkeypatch.setattr(wiki, "WIKI_DIR", wiki_dir)
+        # Point schema template to test fixture
+        monkeypatch.setattr(wiki, "_SCHEMA_SRC", str(tmp_path / "nonexistent"))
+        return wiki
+
+    def test_init_creates_structure(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        r = wiki.wiki_init()
+        assert r["status"] == "initialized"
+        for cat in ("entities", "playbooks", "journal", "raw"):
+            assert os.path.isdir(os.path.join(r["path"], cat))
+        assert os.path.exists(os.path.join(r["path"], "index.md"))
+        assert os.path.exists(os.path.join(r["path"], "log.md"))
+        assert os.path.exists(os.path.join(r["path"], "schema.md"))
+
+    def test_init_idempotent(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "# Apple", "Apple Inc")
+        wiki.wiki_init()  # Should not destroy existing data
+        r = wiki.wiki_read_page("entities", "aapl")
+        assert r["content"] == "# Apple"
+
+    def test_create_and_read_page(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        r = wiki.wiki_create_page("entities", "aapl", "# Apple Inc\n\nTech company.", "Apple Inc")
+        assert r["status"] == "created"
+        assert r["slug"] == "aapl"
+
+        loaded = wiki.wiki_read_page("entities", "aapl")
+        assert loaded["content"] == "# Apple Inc\n\nTech company."
+        assert loaded["category"] == "entities"
+
+    def test_create_duplicate_returns_error(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "# Apple", "Apple")
+        r = wiki.wiki_create_page("entities", "aapl", "# Apple 2", "Apple 2")
+        assert "error" in r
+
+    def test_create_updates_index(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "# Apple", "Apple Inc tech company")
+        index = wiki._read_index()
+        assert "aapl" in index
+        assert "Apple Inc tech company" in index
+
+    def test_update_page(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "# Apple v1", "Apple v1")
+        r = wiki.wiki_update_page("entities", "aapl", "# Apple v2", "Apple v2")
+        assert r["status"] == "updated"
+        loaded = wiki.wiki_read_page("entities", "aapl")
+        assert loaded["content"] == "# Apple v2"
+
+    def test_update_nonexistent_returns_error(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        r = wiki.wiki_update_page("entities", "aapl", "# Apple", "Apple")
+        assert "error" in r
+
+    def test_search_finds_content(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "Revenue $394B, services growing 14%", "Apple")
+        wiki.wiki_create_page("entities", "msft", "Revenue $236B, Azure growing 29%", "Microsoft")
+        r = wiki.wiki_search("services growing")
+        assert r["count"] == 1
+        assert r["matches"][0]["slug"] == "aapl"
+
+    def test_search_by_name(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "# Apple", "Apple")
+        r = wiki.wiki_search("aapl")
+        assert r["count"] == 1
+        assert r["matches"][0]["name_match"] is True
+
+    def test_search_scoped_to_category(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "discount rate 10%", "Apple")
+        wiki.wiki_create_page("playbooks", "dcf", "discount rate 8%", "DCF defaults")
+        r = wiki.wiki_search("discount rate", category="playbooks")
+        assert r["count"] == 1
+        assert r["matches"][0]["category"] == "playbooks"
+
+    def test_list_pages(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "# Apple", "Apple")
+        wiki.wiki_create_page("entities", "msft", "# Microsoft", "Microsoft")
+        wiki.wiki_create_page("playbooks", "dcf", "# DCF", "DCF defaults")
+        r = wiki.wiki_list_pages()
+        assert r["count"] == 3
+        r2 = wiki.wiki_list_pages(category="entities")
+        assert r2["count"] == 2
+
+    def test_lint_detects_orphans(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "# Apple", "Apple")
+        # Create a file directly (bypassing index)
+        orphan = os.path.join(wiki.WIKI_DIR, "entities", "orphan.md")
+        with open(orphan, "w") as f:
+            f.write("# Orphan page")
+        r = wiki.wiki_lint()
+        assert "entities/orphan.md" in r["issues"]["orphan_pages"]
+
+    def test_lint_detects_stale(self, tmp_path, monkeypatch):
+        import time
+
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "old", "# Old page", "Old")
+        # Backdate the file 100 days
+        path = os.path.join(wiki.WIKI_DIR, "entities", "old.md")
+        old_time = time.time() - (100 * 86400)
+        os.utime(path, (old_time, old_time))
+        r = wiki.wiki_lint()
+        assert "entities/old.md" in r["issues"]["stale_pages"]
+
+    def test_status(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        wiki.wiki_init()
+        wiki.wiki_create_page("entities", "aapl", "# Apple", "Apple")
+        wiki.wiki_create_page("journal", "aapl-lbo-2026-04-05", "# LBO", "LBO analysis")
+        r = wiki.wiki_status()
+        assert r["initialized"] is True
+        assert r["pages"]["entities"] == 1
+        assert r["pages"]["journal"] == 1
+        assert r["total_pages"] == 2
+
+    def test_status_not_initialized(self, tmp_path, monkeypatch):
+        wiki = self._patch(tmp_path, monkeypatch)
+        r = wiki.wiki_status()
+        assert r["initialized"] is False
