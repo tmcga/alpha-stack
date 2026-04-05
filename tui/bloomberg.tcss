@@ -1,0 +1,276 @@
+/* Bloomberg Terminal Theme for Alpha Stack TUI */
+
+Screen {
+    background: #0a0e2a;
+    color: #e0e0e0;
+}
+
+/* ── Header ── */
+#header {
+    dock: top;
+    height: 2;
+    background: #0d1230;
+    color: #ff9900;
+    text-style: bold;
+    padding: 0 1;
+    border-bottom: solid #3a3f5c;
+}
+
+#fn-bar {
+    dock: top;
+    height: 1;
+    background: #1a1f4a;
+    color: #ff9900;
+    padding: 0 1;
+}
+
+/* ── Command bar ── */
+#command-bar {
+    dock: bottom;
+    height: 3;
+    background: #000000;
+    border-top: solid #3a3f5c;
+    padding: 0 1;
+}
+
+#command-bar Input {
+    background: #000000;
+    color: #00ff41;
+    border: none;
+}
+
+#command-bar Input:focus {
+    border: none;
+}
+
+#command-bar .cmd-label {
+    color: #ff9900;
+    text-style: bold;
+}
+
+/* ── Panels ── */
+
+/* ── Dashboard panels ── */
+#dashboard-top, #dashboard-bottom {
+    height: 1fr;
+}
+
+.dash-panel {
+    border: solid #3a3f5c;
+    background: #0d1230;
+    padding: 1 2;
+}
+
+.dash-panel .title {
+    color: #ff9900;
+    text-style: bold;
+}
+
+/* ── Tool Runner layout ── */
+#tool-runner {
+    layout: horizontal;
+}
+
+#tool-sidebar {
+    width: 22;
+    border-right: solid #3a3f5c;
+    background: #0d1230;
+    padding: 1;
+}
+
+#tool-main {
+    width: 1fr;
+}
+
+#tool-results {
+    height: 1fr;
+    padding: 1 2;
+    overflow-y: auto;
+}
+
+/* ── Wiki layout ── */
+#wiki-browser {
+    layout: horizontal;
+}
+
+#wiki-sidebar {
+    width: 22;
+    border-right: solid #3a3f5c;
+    background: #0d1230;
+    padding: 1;
+    overflow-y: auto;
+}
+
+#wiki-content {
+    width: 1fr;
+    padding: 1 2;
+    overflow-y: auto;
+}
+
+/* ── Tree widgets ── */
+Tree {
+    background: #0d1230;
+    color: #e0e0e0;
+    padding: 0;
+}
+
+Tree > .tree--cursor {
+    background: #2a2f6a;
+    color: #ffffff;
+    text-style: bold;
+}
+
+Tree > .tree--label {
+    color: #e0e0e0;
+}
+
+Tree > .tree--guides {
+    color: #3a3f5c;
+}
+
+/* ── DataTable ── */
+DataTable {
+    background: #0a0e2a;
+}
+
+DataTable > .datatable--header {
+    background: #1a1f4a;
+    color: #ff9900;
+    text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+    background: #2a2f6a;
+    color: #ffffff;
+}
+
+/* ── Input fields ── */
+Input {
+    background: #000000;
+    border: solid #3a3f5c;
+    color: #e0e0e0;
+    height: 3;
+}
+
+Input:focus {
+    border: solid #ff9900;
+}
+
+Input.-invalid {
+    border: solid #ff1744;
+}
+
+/* ── Buttons ── */
+Button {
+    background: #1a1f4a;
+    color: #ff9900;
+    border: solid #3a3f5c;
+    min-width: 12;
+    height: 3;
+}
+
+Button:hover {
+    background: #2a2f6a;
+}
+
+Button:focus {
+    border: solid #ff9900;
+    text-style: bold;
+}
+
+Button.primary {
+    background: #ff9900;
+    color: #0a0e2a;
+}
+
+Button.primary:hover {
+    background: #ffb340;
+}
+
+/* ── Static text styles ── */
+.positive {
+    color: #00c853;
+}
+
+.negative {
+    color: #ff1744;
+}
+
+.amber {
+    color: #ff9900;
+}
+
+.muted {
+    color: #6a6f8c;
+}
+
+.bright {
+    color: #ffffff;
+    text-style: bold;
+}
+
+/* ── Markdown viewer ── */
+Markdown {
+    background: #0d1230;
+    color: #e0e0e0;
+    padding: 1 2;
+}
+
+MarkdownH1 {
+    color: #ff9900;
+    text-style: bold;
+}
+
+MarkdownH2 {
+    color: #ff9900;
+}
+
+MarkdownH3 {
+    color: #e0e0e0;
+    text-style: bold;
+}
+
+/* ── Scrollbar ── */
+Scrollbar {
+    background: #0d1230;
+}
+
+ScrollbarSlider {
+    color: #3a3f5c;
+}
+
+ScrollbarSlider:hover {
+    color: #ff9900;
+}
+
+/* ── Labels in forms ── */
+.form-label {
+    color: #ff9900;
+    width: 20;
+    padding: 1 1 0 0;
+}
+
+.form-row {
+    layout: horizontal;
+    height: auto;
+    margin-bottom: 1;
+}
+
+/* ── Idea Map layout ── */
+#idea-map {
+    layout: horizontal;
+}
+
+#idea-sidebar {
+    width: 28;
+    border-right: solid #3a3f5c;
+    background: #0d1230;
+    padding: 1;
+    overflow-y: auto;
+}
+
+#idea-detail {
+    width: 1fr;
+    padding: 1 2;
+    overflow-y: auto;
+}
