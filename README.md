@@ -3,17 +3,17 @@
 [![CI](https://github.com/tmcga/alpha-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/tmcga/alpha-stack/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-![Skills](https://img.shields.io/badge/skills-46-orange)
-![Tools](https://img.shields.io/badge/tools-25-purple)
+![Skills](https://img.shields.io/badge/skills-47-orange)
+![Tools](https://img.shields.io/badge/tools-26-purple)
 
 > What if every analyst had a senior MD's frameworks, a quant's toolkit, and a risk officer's discipline — loaded into their terminal?
 
-**Alpha Stack** is an installable AI skill system for finance. 46 skills covering every major Wall Street desk, corporate finance function, and back-office operation, 25 computational tools with zero dependencies, and a structured workflow for investment analysis — from sourcing ideas to monitoring positions.
+**Alpha Stack** is an installable AI skill system for finance. 47 skills covering every major Wall Street desk, corporate finance function, and back-office operation, 26 computational tools with zero dependencies, and a structured workflow for investment analysis — from sourcing ideas to monitoring positions.
 
 ### Why Alpha Stack?
 
 - **Not prompts — pipelines.** Each skill is a 200-870 line execution pipeline with phased workflows, decision gates, and quality checks. Not a list of questions to ask.
-- **Real math, not vibes.** 25 Python tools that run DCF, Black-Scholes, Monte Carlo, Black-Litterman, LBO, DSCR sizing, equity waterfalls, and more. Every recommendation is backed by a calculation you can verify.
+- **Real math, not vibes.** 26 Python tools that run DCF, Black-Scholes, Monte Carlo, Black-Litterman, LBO, DSCR sizing, equity waterfalls, and more. Every recommendation is backed by a calculation you can verify.
 - **Adversarial by default.** Every thesis gets a pre-mortem. Every valuation gets a sensitivity table. Every recommendation includes what kills it.
 - **Zero dependencies.** All tools are stdlib-only Python. Install in 30 seconds. No API keys, no accounts, no subscriptions.
 
@@ -52,7 +52,7 @@ Every analysis follows six phases:
 
 ---
 
-## 46 Skills
+## 47 Skills
 
 **Deal & Banking**
 | Command | What It Does |
@@ -144,13 +144,18 @@ Every analysis follows six phases:
 | `/audit` | Audit planning, risk assessment, substantive testing, controls, sampling |
 | `/data-entry` | Financial data extraction, cleaning, normalization, validation |
 
+**Knowledge Base**
+| Command | What It Does |
+|---------|-------------|
+| `/wiki` | Personal knowledge base — ingest analyses, query prior research, track methodology preferences. Compounds over time. |
+
 Each skill is an execution pipeline with phased workflows, decision gates, tool integration, quality gates, hard constraints, and common pitfalls.
 
 Every skill has a **ready-to-paste example** in [`examples/`](examples/) — realistic scenarios with all inputs pre-filled so you can try any skill immediately without inventing data.
 
 ---
 
-## 25 Computational Tools
+## 26 Computational Tools
 
 Standalone Python calculators. Zero dependencies — just Python 3.10+. Run from CLI or import as modules.
 
@@ -165,6 +170,7 @@ Standalone Python calculators. Zero dependencies — just Python 3.10+. Run from
 | **VC / Lending** | `vc_returns.py` `loan_amort.py` |
 | **Tax & Depreciation** | `depreciation.py` |
 | **Quant Trading** | `market_maker.py` |
+| **Knowledge Base** | `wiki.py` |
 
 ```bash
 # Run any tool directly
@@ -178,9 +184,42 @@ Full tool documentation at [tools/README.md](tools/README.md).
 
 ---
 
+## Personal Knowledge Base (`/wiki`)
+
+Alpha Stack gets smarter the longer you use it. The `/wiki` skill builds a personal finance knowledge base — a persistent, local collection of markdown files that captures every company you research, every thesis you form, and every methodology preference you express.
+
+Inspired by Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern.
+
+```
+You:    /wiki init
+Claude: Wiki initialized at ~/.alpha-stack/wiki/
+
+You:    /wiki — ingest my AAPL analysis: services mix shifting from 22% to 35%,
+        driving P/E expansion from 28x to 32x. Target $245. Key risk: EU antitrust.
+Claude: Created entities/aapl.md, journal/aapl-services-thesis-2026-04-05.md
+        Updated index.md with cross-references.
+
+        --- 3 months later ---
+
+You:    What do I know about Apple?
+Claude: Per your analysis from 2026-04-05 (journal/aapl-services-thesis-2026-04-05.md):
+        Thesis: services mix shift → P/E expansion to 32x. Target $245.
+        Key risk: EU antitrust forcing App Store fee reductions.
+```
+
+**How it works:**
+- **Entities** — company/sector pages that accumulate across analyses
+- **Journal** — dated analysis records with thesis, findings, recommendation, and outcome tracking
+- **Playbooks** — your preferred methodologies ("I use 10% WACC for mid-cap tech")
+- **Schema** — conventions that evolve as the LLM learns your style
+
+Everything stays local at `~/.alpha-stack/wiki/`. Nothing is committed to the repo. The wiki is yours — just markdown files you can browse, git-track separately, or back up however you want.
+
+---
+
 ## Claude Desktop (MCP Server)
 
-Alpha Stack is also a **finance MCP server** — 37 tools that Claude Desktop can call natively. No terminal, no Python knowledge. Just ask a question and Claude runs the math.
+Alpha Stack is also a **finance MCP server** — 45 tools that Claude Desktop can call natively. No terminal, no Python knowledge. Just ask a question and Claude runs the math.
 
 ### Setup
 
@@ -277,19 +316,20 @@ alpha-stack/
 ├── ETHOS.md               The Alpha Edge — finance AI philosophy
 ├── setup.sh               Claude Code skill installer
 ├── setup-mcp.sh           Claude Desktop MCP installer
-├── mcp_server.py          MCP server (37 tools for Claude Desktop)
+├── mcp_server.py          MCP server (45 tools for Claude Desktop)
 ├── pyproject.toml         Python dependencies (mcp SDK)
 ├── examples/              26 ready-to-paste scenarios + 5 annotated outputs
 ├── scripts/               Contributor scaffolding (new-skill.sh, new-tool.sh)
-├── skills/                46 skill directories (SKILL.md + prompts/)
+├── skills/                47 skill directories (SKILL.md + prompts/)
 │   ├── sell-side/         782 lines — full M&A process
 │   ├── re-acquisitions/   240 lines — property acquisition underwriting
 │   ├── pe-buyout/         257 lines — control buyout analysis
 │   ├── vc-early/          252 lines — early-stage VC evaluation
 │   ├── retirement/        282 lines — Monte Carlo retirement planning
+│   ├── wiki/              360 lines — personal knowledge base (LLM Wiki)
 │   └── ... (35 more)
-├── tools/                 25 Python calculators (stdlib-only, <200 lines each)
-├── tests/                 98 pytest tests
+├── tools/                 26 Python calculators (stdlib-only)
+├── tests/                 113 pytest tests
 └── docs/                  Workflow documentation
 ```
 
