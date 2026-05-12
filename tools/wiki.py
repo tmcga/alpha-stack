@@ -18,9 +18,7 @@ import tempfile
 from datetime import datetime
 from datetime import timedelta
 
-WIKI_DIR = os.environ.get("ALPHA_STACK_WIKI_DIR") or os.path.join(
-    os.path.expanduser("~"), ".alpha-stack", "wiki"
-)
+WIKI_DIR = os.environ.get("ALPHA_STACK_WIKI_DIR") or os.path.join(os.path.expanduser("~"), ".alpha-stack", "wiki")
 CATEGORIES = ("entities", "playbooks", "journal", "raw")
 _SCHEMA_SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "skills", "wiki", "schema-template.md")
 
