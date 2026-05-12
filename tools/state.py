@@ -12,7 +12,9 @@ import json
 import os
 from datetime import datetime
 
-STATE_DIR = os.path.join(os.path.expanduser("~"), ".alpha-stack", "sessions")
+STATE_DIR = os.environ.get("ALPHA_STACK_STATE_DIR") or os.path.join(
+    os.path.expanduser("~"), ".alpha-stack", "sessions"
+)
 
 
 def _ensure_dir():

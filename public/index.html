@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alpha Stack — Finance AI calculators for investment professionals</title>
+  <meta name="description" content="25 institutional-grade finance calculators in your browser. DCF, LBO, Black-Scholes, Monte Carlo, debt sizing, and more. No install, no spreadsheets.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">ALPHA STACK <span class="v">v1.0</span></div>
+    <nav>
+      <a href="#tools">Tools</a>
+      <a href="#how">How it works</a>
+      <a href="https://github.com/tmcga/alpha-stack" target="_blank" rel="noopener">GitHub</a>
+      <a href="/app" class="cta">Launch app</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Institutional finance models, <span class="amber">in your browser.</span></h1>
+    <p class="sub">25 calculators used by bankers, PE associates, hedge fund analysts, and CFOs — DCF, LBO, Black-Scholes, Monte Carlo, debt sizing, waterfall, and more. No Excel. No install. Just enter inputs, get answers.</p>
+    <div class="cta-row">
+      <a href="/app" class="btn-primary">Launch the app →</a>
+      <a href="#tools" class="btn-ghost">See all tools</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Built for the way you work.</h2>
+    <p class="lede">Forget the half-broken spreadsheet your associate built three jobs ago.</p>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">▲</div>
+        <h3>Real math, not vibes.</h3>
+        <p>Every output is a real calculation — DCF, Greeks, Brinson attribution, Black-Litterman. Verified Python, not approximations.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">◆</div>
+        <h3>Show your work.</h3>
+        <p>Inputs, outputs, and assumptions all visible. Copy the result, share the URL, or download as CSV.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">●</div>
+        <h3>Zero setup.</h3>
+        <p>Open the page. Pick a tool. Run it. No accounts, no credit card, no install. Your inputs stay in your browser.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">■</div>
+        <h3>Banker-grade outputs.</h3>
+        <p>Returns attribution, sensitivity ranges, breakdowns. Built to match the formatting conventions of every major bank and PE shop.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="tools">
+    <h2>25 calculators across 7 desks.</h2>
+    <p class="lede">Pick one and start. Every tool has example inputs pre-filled so you can try it cold.</p>
+    <div id="tool-list" class="tool-grid">
+      <div style="color: var(--text-dim); padding: 24px;">Loading…</div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <h2>How it works.</h2>
+    <p class="lede">Three steps.</p>
+    <div class="features">
+      <div class="feature">
+        <h3>1. Pick a tool.</h3>
+        <p>Browse 25 calculators grouped by desk — Valuation, Options, Fixed Income, Portfolio, M&amp;A, Real Estate, VC.</p>
+      </div>
+      <div class="feature">
+        <h3>2. Enter inputs.</h3>
+        <p>Each field has a hint. Click "example" to pre-fill realistic numbers. Optional fields are marked.</p>
+      </div>
+      <div class="feature">
+        <h3>3. Get answers.</h3>
+        <p>Results render as a card with key metrics, a breakdown table, and a copy button. Share the URL to share the analysis.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Open source. MIT licensed. <a href="https://github.com/tmcga/alpha-stack" target="_blank" rel="noopener">github.com/tmcga/alpha-stack</a>
+  </footer>
+
+  <script>
+    // Fetch tools and render the grid
+    fetch('/api/tools')
+      .then(r => r.json())
+      .then(data => {
+        const grid = document.getElementById('tool-list');
+        grid.innerHTML = '';
+        const grouped = data.tools;
+        for (const category of data.categories) {
+          if (!grouped[category]) continue;
+          for (const tool of grouped[category]) {
+            const card = document.createElement('a');
+            card.className = 'tool-card';
+            card.href = `/app?tool=${encodeURIComponent(tool.key)}`;
+            card.innerHTML = `
+              <div class="cat">${category}</div>
+              <div class="name">${tool.name}</div>
+              <div class="desc">${tool.params.length} input${tool.params.length === 1 ? '' : 's'}</div>
+            `;
+            grid.appendChild(card);
+          }
+        }
+      })
+      .catch(err => {
+        document.getElementById('tool-list').innerHTML =
+          '<div style="color: var(--red); padding: 24px;">API unreachable. Make sure the server is running.</div>';
+      });
+  </script>
+</body>
+</html>
