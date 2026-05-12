@@ -90,9 +90,11 @@ function selectTool(key, urlParams = null) {
       <button class="btn-sm" id="btn-share" disabled>Share link</button>
       <button class="btn-sm" id="btn-copy" disabled>Copy result</button>
       <button class="btn-sm" id="btn-csv" disabled>Download CSV</button>
+      <button class="btn-sm" id="btn-sens" disabled>Sensitivity →</button>
     </div>
 
     <div id="result-area"></div>
+    <div id="sens-area"></div>
   `;
 
   const form = $('param-form');
@@ -116,14 +118,19 @@ function selectTool(key, urlParams = null) {
   $('btn-share').onclick = shareLink;
   $('btn-copy').onclick = copyResult;
   $('btn-csv').onclick = downloadCsv;
+  $('btn-sens').onclick = openSensitivity;
 
   // Pre-fill from URL params if provided
   if (urlParams) {
+    const templateKey = urlParams.get('template');
+    if (templateKey) {
+      applyTemplate(templateKey);
+    }
     for (const p of params) {
       const v = urlParams.get(p.name);
       if (v !== null) $(`p-${p.name}`).value = v;
     }
-    // Auto-run if any params provided
+    // Auto-run if any input params provided (not just tool/template)
     const hasAny = params.some((p) => urlParams.has(p.name));
     if (hasAny) setTimeout(runTool, 50);
   }
@@ -156,8 +163,9 @@ function fillExample() {
 function clearForm() {
   document.querySelectorAll('#param-form input').forEach((el) => (el.value = ''));
   $('result-area').innerHTML = '';
+  $('sens-area').innerHTML = '';
   lastResult = null;
-  ['btn-share', 'btn-copy', 'btn-csv'].forEach((id) => ($(id).disabled = true));
+  ['btn-share', 'btn-copy', 'btn-csv', 'btn-sens'].forEach((id) => ($(id).disabled = true));
 }
 
 // ── Run ─────────────────────────────────────────────────────────────────
@@ -195,7 +203,7 @@ async function runTool() {
     } else {
       lastResult = { tool: tool.name, inputs: inputState, result: data.result };
       renderResult(data.result, tool);
-      ['btn-share', 'btn-copy', 'btn-csv'].forEach((id) => ($(id).disabled = false));
+      ['btn-share', 'btn-copy', 'btn-csv', 'btn-sens'].forEach((id) => ($(id).disabled = false));
       // Encode inputs in URL for sharing
       const url = new URL(location);
       url.search = '';
@@ -435,6 +443,187 @@ function csvEscape(s) {
   s = String(s ?? '');
   if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
   return s;
+}
+
+// ── Sensitivity ──────────────────────────────────────────────────────────
+let TEMPLATES_CACHE = null;
+async function loadTemplates() {
+  if (TEMPLATES_CACHE) return TEMPLATES_CACHE;
+  const r = await fetch('/api/templates/web');
+  TEMPLATES_CACHE = await r.json();
+  return TEMPLATES_CACHE;
+}
+
+async function applyTemplate(templateKey) {
+  const data = await loadTemplates();
+  const t = data.starters.find((s) => s.key === templateKey);
+  if (!t) return;
+  for (const [param, value] of Object.entries(t.defaults)) {
+    const el = $(`p-${param}`);
+    if (el) el.value = value;
+  }
+  toast(`Loaded template: ${t.name}`);
+}
+
+function openSensitivity() {
+  const tool = TOOLS[currentToolKey];
+  const numericParams = tool.params.filter((p) => p.type === 'float' || p.type === 'int');
+  if (numericParams.length < 2) {
+    showError('Sensitivity needs at least 2 numeric parameters.');
+    return;
+  }
+  if (!lastResult) {
+    showError('Run the tool once first to set a base case.');
+    return;
+  }
+
+  const outputKeys = Object.keys(lastResult.result || {}).filter(
+    (k) => typeof lastResult.result[k] === 'number'
+  );
+  if (outputKeys.length === 0) {
+    showError('No numeric output to sensitize on.');
+    return;
+  }
+
+  // Guess sensible defaults from template if available
+  let defaultRow = numericParams[0].name;
+  let defaultCol = numericParams[1].name;
+  let defaultOutput = outputKeys[0];
+  loadTemplates().then((data) => {
+    const t = data.starters.find((s) => s.tool_key === currentToolKey && s.sensitivity);
+    if (t) {
+      const s = t.sensitivity;
+      if (s.row_param) $('sens-row-param').value = s.row_param;
+      if (s.col_param) $('sens-col-param').value = s.col_param;
+      if (s.output_key && outputKeys.includes(s.output_key)) $('sens-output').value = s.output_key;
+      if (s.row_values) $('sens-row-vals').value = s.row_values.join(', ');
+      if (s.col_values) $('sens-col-vals').value = s.col_values.join(', ');
+    }
+  });
+
+  const area = $('sens-area');
+  area.innerHTML = `
+    <div class="sens-panel">
+      <h3>Sensitivity Table</h3>
+      <div class="sens-row">
+        <div><label class="cat-label" style="padding:0;display:block;margin-bottom:6px;">Row variable</label>
+          <select id="sens-row-param">${numericParams
+            .map((p) => `<option value="${p.name}"${p.name === defaultRow ? ' selected' : ''}>${p.label}</option>`)
+            .join('')}</select></div>
+        <div><label class="cat-label" style="padding:0;display:block;margin-bottom:6px;">Column variable</label>
+          <select id="sens-col-param">${numericParams
+            .map((p) => `<option value="${p.name}"${p.name === defaultCol ? ' selected' : ''}>${p.label}</option>`)
+            .join('')}</select></div>
+      </div>
+      <div class="sens-row">
+        <input id="sens-row-vals" placeholder="Row values (5 numbers, comma-separated)">
+        <input id="sens-col-vals" placeholder="Column values (5 numbers, comma-separated)">
+      </div>
+      <div class="sens-row" style="grid-template-columns: 1fr;">
+        <div><label class="cat-label" style="padding:0;display:block;margin-bottom:6px;">Output metric</label>
+          <select id="sens-output">${outputKeys
+            .map((k) => `<option value="${k}"${k === defaultOutput ? ' selected' : ''}>${prettyKey(k)}</option>`)
+            .join('')}</select></div>
+      </div>
+      <div class="actions" style="margin-bottom:0;">
+        <button class="btn-sm primary" id="btn-sens-run">Generate grid</button>
+        <button class="btn-sm" id="btn-sens-close">Close</button>
+      </div>
+      <div id="sens-result"></div>
+    </div>
+  `;
+
+  $('btn-sens-run').onclick = runSensitivity;
+  $('btn-sens-close').onclick = () => (area.innerHTML = '');
+}
+
+async function runSensitivity() {
+  const rowParam = $('sens-row-param').value;
+  const colParam = $('sens-col-param').value;
+  const outputKey = $('sens-output').value;
+  const rowVals = $('sens-row-vals').value.split(',').map((s) => parseFloat(s.trim())).filter((n) => !isNaN(n));
+  const colVals = $('sens-col-vals').value.split(',').map((s) => parseFloat(s.trim())).filter((n) => !isNaN(n));
+
+  if (rowParam === colParam) {
+    $('sens-result').innerHTML = `<div class="error-card">Row and column variables must differ.</div>`;
+    return;
+  }
+  if (rowVals.length < 2 || colVals.length < 2) {
+    $('sens-result').innerHTML = `<div class="error-card">Provide at least 2 row and 2 column values.</div>`;
+    return;
+  }
+
+  const btn = $('btn-sens-run');
+  btn.disabled = true;
+  btn.textContent = 'Running…';
+  $('sens-result').innerHTML = '<div style="color:var(--text-dim);padding:12px;">Running grid…</div>';
+
+  try {
+    const res = await fetch(`/api/tools/${encodeURIComponent(currentToolKey)}/sensitivity`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        base_params: Object.fromEntries(
+          Object.entries(lastResult.inputs).map(([k, v]) => {
+            const param = TOOLS[currentToolKey].params.find((p) => p.name === k);
+            return [k, coerce(v, param ? param.type : 'float')];
+          })
+        ),
+        row_param: rowParam,
+        col_param: colParam,
+        row_values: rowVals,
+        col_values: colVals,
+        output_key: outputKey,
+      }),
+    });
+    const data = await res.json();
+    renderSensitivity(data, rowParam, colParam, outputKey);
+  } catch (err) {
+    $('sens-result').innerHTML = `<div class="error-card">Network error: ${escapeHtml(err.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate grid';
+  }
+}
+
+function renderSensitivity(data, rowParam, colParam, outputKey) {
+  if (!data.ok) {
+    $('sens-result').innerHTML = `<div class="error-card">${escapeHtml(data.detail || 'Failed')}</div>`;
+    return;
+  }
+  const { grid, row_values, col_values } = data;
+  const baseRow = lastResult.inputs[rowParam];
+  const baseCol = lastResult.inputs[colParam];
+
+  let html = `<table class="sens-grid"><thead><tr>
+    <th class="corner">${prettyKey(rowParam)} ↓ / ${prettyKey(colParam)} →</th>
+    ${col_values.map((c) => `<th>${formatScalar(colParam, c)}</th>`).join('')}
+  </tr></thead><tbody>`;
+  for (let i = 0; i < row_values.length; i++) {
+    html += `<tr><td class="row-label">${formatScalar(rowParam, row_values[i])}</td>`;
+    for (let j = 0; j < col_values.length; j++) {
+      const isBase =
+        Math.abs(row_values[i] - parseFloat(baseRow)) < 1e-9 &&
+        Math.abs(col_values[j] - parseFloat(baseCol)) < 1e-9;
+      const v = grid[i][j];
+      html += `<td class="${isBase ? 'base-case' : ''}">${v === null ? '—' : formatValue(outputKey, v)}</td>`;
+    }
+    html += `</tr>`;
+  }
+  html += `</tbody></table>`;
+  $('sens-result').innerHTML = html;
+}
+
+function formatScalar(key, v) {
+  // Used for axis labels; show rates as %
+  if (typeof v !== 'number') return String(v);
+  const k = key.toLowerCase();
+  if (/(rate|growth|wacc|ltv|dscr|tax|premium|prob|terminal_growth)/.test(k) && Math.abs(v) < 5) {
+    return (v * 100).toFixed(1) + '%';
+  }
+  if (/(multiple|leverage)/.test(k)) return v.toFixed(1) + 'x';
+  if (Math.abs(v) >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+  return v.toString();
 }
 
 init();

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alpha Stack — Chat</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><a href="/" style="color: inherit;">ALPHA STACK</a> <span class="v">v1.0</span></div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/app">Tools</a>
+      <a href="/chat" style="color: var(--amber);">Chat</a>
+      <a href="https://github.com/tmcga/alpha-stack" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="chat-shell">
+    <aside class="chat-sidebar" id="chat-sidebar">
+      <div class="chat-section">
+        <div class="chat-section-label">Your Anthropic Key</div>
+        <input type="password" id="api-key" placeholder="sk-ant-..." autocomplete="off">
+        <div class="chat-hint">
+          Stored in your browser only. <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Get one →</a>
+        </div>
+        <div class="chat-btn-row">
+          <button class="btn-sm" id="btn-save-key">Save</button>
+          <button class="btn-sm" id="btn-clear-key">Clear</button>
+        </div>
+      </div>
+
+      <div class="chat-section">
+        <div class="chat-section-label">Model</div>
+        <select id="model-select"></select>
+      </div>
+
+      <div class="chat-section">
+        <div class="chat-section-label">Try asking</div>
+        <button class="example-prompt" data-prompt="Size a senior loan on a $28M property with $1.8M NOI at 6.25% interest. What's the max loan and DSCR?">Size a senior loan on a $28M property</button>
+        <button class="example-prompt" data-prompt="Run an LBO with $100M EBITDA, 10x entry, 11x exit, 5x leverage, 6% rate, 8% growth, 5 year hold. What's the IRR and what drives it?">LBO with $100M EBITDA</button>
+        <button class="example-prompt" data-prompt="Price a 3-month at-the-money call on a $100 stock with 30% vol and 5% rate. Give me all the Greeks.">Price an ATM call</button>
+        <button class="example-prompt" data-prompt="I have $1M, expect 7% returns with 15% vol, want to retire in 30 years with 4% withdrawal. What's my ruin probability?">Retirement Monte Carlo</button>
+        <button class="example-prompt" data-prompt="DCF a company with FCFs of 100, 110, 121, 133, 146 (next 5 years), 10% WACC, 2.5% terminal growth, $500M net debt, 100M shares.">DCF valuation</button>
+      </div>
+
+      <div class="chat-section">
+        <div class="chat-section-label">Conversation</div>
+        <button class="btn-sm" id="btn-new-chat" style="width:100%;">New chat</button>
+      </div>
+    </aside>
+
+    <main class="chat-main">
+      <div id="messages" class="messages">
+        <div class="welcome">
+          <div class="welcome-icon">◆</div>
+          <h2>Ask Alpha Stack anything.</h2>
+          <p>I have 25 institutional calculators on tap — DCF, LBO, Black-Scholes, debt sizing, Monte Carlo, and more. Describe what you want in plain English; I'll run the math and explain the answer.</p>
+          <p class="welcome-hint">Add your Anthropic API key in the sidebar to start. Your key stays in your browser — it's only sent to Anthropic with each request.</p>
+        </div>
+      </div>
+
+      <div class="composer">
+        <textarea id="input" placeholder="Ask about a valuation, a loan, a portfolio, an options trade..." rows="2"></textarea>
+        <button id="btn-send" class="btn-sm primary">Send ↵</button>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="/chat.js"></script>
+</body>
+</html>

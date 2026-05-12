@@ -21,6 +21,9 @@ from fastapi.responses import FileResponse  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 
 from plugin.server.app import app as base_app  # noqa: E402
+from plugin.server.chat import router as chat_router  # noqa: E402
+
+base_app.include_router(chat_router)
 
 app = FastAPI(title="Alpha Stack on Vercel")
 app.mount("/api", base_app)
@@ -28,10 +31,15 @@ app.mount("/api", base_app)
 # Serve the static frontend (for local dev — Vercel handles this via public/ in production)
 _PUBLIC_DIR = os.path.join(_ROOT, "public")
 
-# Pretty URL for the app — matches Vercel's cleanUrls behavior locally
+# Pretty URLs for app + chat — matches Vercel's cleanUrls behavior locally
 @app.get("/app")
 async def app_page():
     return FileResponse(os.path.join(_PUBLIC_DIR, "app.html"))
+
+
+@app.get("/chat")
+async def chat_page():
+    return FileResponse(os.path.join(_PUBLIC_DIR, "chat.html"))
 
 
 if os.path.isdir(_PUBLIC_DIR):

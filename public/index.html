@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alpha Stack — Finance AI calculators for investment professionals</title>
-  <meta name="description" content="25 institutional-grade finance calculators in your browser. DCF, LBO, Black-Scholes, Monte Carlo, debt sizing, and more. No install, no spreadsheets.">
+  <meta name="description" content="25 institutional-grade finance calculators plus an AI chat that runs the math for you. DCF, LBO, Black-Scholes, Monte Carlo, debt sizing — no install, no spreadsheets.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:title" content="Alpha Stack — Finance AI for investment professionals">
+  <meta property="og:description" content="25 institutional calculators + AI chat. Ask in plain English, get the math back.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -12,7 +17,8 @@
     <div class="brand">ALPHA STACK <span class="v">v1.0</span></div>
     <nav>
       <a href="#tools">Tools</a>
-      <a href="#how">How it works</a>
+      <a href="/chat">Chat</a>
+      <a href="#templates">Templates</a>
       <a href="https://github.com/tmcga/alpha-stack" target="_blank" rel="noopener">GitHub</a>
       <a href="/app" class="cta">Launch app</a>
     </nav>
@@ -20,10 +26,10 @@
 
   <section class="hero">
     <h1>Institutional finance models, <span class="amber">in your browser.</span></h1>
-    <p class="sub">25 calculators used by bankers, PE associates, hedge fund analysts, and CFOs — DCF, LBO, Black-Scholes, Monte Carlo, debt sizing, waterfall, and more. No Excel. No install. Just enter inputs, get answers.</p>
+    <p class="sub">25 calculators used by bankers, PE associates, hedge fund analysts, and CFOs — DCF, LBO, Black-Scholes, Monte Carlo, debt sizing, waterfall, and more. Two ways to use it: fill a form, or chat with an AI that runs the math for you.</p>
     <div class="cta-row">
-      <a href="/app" class="btn-primary">Launch the app →</a>
-      <a href="#tools" class="btn-ghost">See all tools</a>
+      <a href="/chat" class="btn-primary">Try the chat →</a>
+      <a href="/app" class="btn-ghost">Browse all tools</a>
     </div>
   </section>
 
@@ -43,14 +49,22 @@
       </div>
       <div class="feature">
         <div class="icon">●</div>
-        <h3>Zero setup.</h3>
-        <p>Open the page. Pick a tool. Run it. No accounts, no credit card, no install. Your inputs stay in your browser.</p>
+        <h3>Ask in English.</h3>
+        <p>Bring your own Anthropic key. Type "size a $28M loan at 6.25% with $1.8M NOI" — the AI picks the right calculator and runs it.</p>
       </div>
       <div class="feature">
         <div class="icon">■</div>
         <h3>Banker-grade outputs.</h3>
         <p>Returns attribution, sensitivity ranges, breakdowns. Built to match the formatting conventions of every major bank and PE shop.</p>
       </div>
+    </div>
+  </section>
+
+  <section class="section" id="templates">
+    <h2>Starter models.</h2>
+    <p class="lede">Real banker models with inputs pre-filled. One click to load.</p>
+    <div id="template-list" class="template-grid">
+      <div style="color: var(--text-dim); padding: 24px;">Loading…</div>
     </div>
   </section>
 
@@ -64,19 +78,19 @@
 
   <section class="section" id="how">
     <h2>How it works.</h2>
-    <p class="lede">Three steps.</p>
+    <p class="lede">Two paths. Pick the one that fits.</p>
     <div class="features">
       <div class="feature">
-        <h3>1. Pick a tool.</h3>
-        <p>Browse 25 calculators grouped by desk — Valuation, Options, Fixed Income, Portfolio, M&amp;A, Real Estate, VC.</p>
+        <h3>Forms path</h3>
+        <p>Browse 25 calculators grouped by desk. Pick one, click "example" to load realistic inputs, then Run. Get a result card with KPIs, breakdowns, and a 5×5 sensitivity grid.</p>
       </div>
       <div class="feature">
-        <h3>2. Enter inputs.</h3>
-        <p>Each field has a hint. Click "example" to pre-fill realistic numbers. Optional fields are marked.</p>
+        <h3>Chat path</h3>
+        <p>Add your Anthropic API key (it stays in your browser). Ask any finance question in plain English. The AI picks the right calculator, runs it, and explains the result.</p>
       </div>
       <div class="feature">
-        <h3>3. Get answers.</h3>
-        <p>Results render as a card with key metrics, a breakdown table, and a copy button. Share the URL to share the analysis.</p>
+        <h3>Share path</h3>
+        <p>Every result has a unique URL with inputs encoded. Send it to a colleague — they can re-run it, tweak inputs, or run a sensitivity grid without an account.</p>
       </div>
     </div>
   </section>
@@ -86,7 +100,7 @@
   </footer>
 
   <script>
-    // Fetch tools and render the grid
+    // Tools grid
     fetch('/api/tools')
       .then(r => r.json())
       .then(data => {
@@ -108,9 +122,32 @@
           }
         }
       })
-      .catch(err => {
+      .catch(() => {
         document.getElementById('tool-list').innerHTML =
           '<div style="color: var(--red); padding: 24px;">API unreachable. Make sure the server is running.</div>';
+      });
+
+    // Templates grid
+    fetch('/api/templates/web')
+      .then(r => r.json())
+      .then(data => {
+        const grid = document.getElementById('template-list');
+        grid.innerHTML = '';
+        for (const t of data.starters) {
+          const card = document.createElement('a');
+          card.className = 'template-card';
+          card.href = `/app?tool=${encodeURIComponent(t.tool_key)}&template=${encodeURIComponent(t.key)}`;
+          card.innerHTML = `
+            <div class="tool-label">${t.tool_name}</div>
+            <div class="name">${t.name}</div>
+            <div class="desc">${t.description}</div>
+          `;
+          grid.appendChild(card);
+        }
+      })
+      .catch(() => {
+        document.getElementById('template-list').innerHTML =
+          '<div style="color: var(--text-dim); padding: 24px;">Templates unavailable.</div>';
       });
   </script>
 </body>
