@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alpha Stack — App</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><a href="/" style="color: inherit;">ALPHA STACK</a> <span class="v">v1.0</span></div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/chat">Chat</a>
+      <a href="https://github.com/tmcga/alpha-stack" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div style="padding: 0 20px 12px; color: var(--text-mute); font-size: 11px;">Loading tools…</div>
+    </aside>
+    <main class="main" id="main">
+      <div class="empty">
+        <div style="font-size: 48px; margin-bottom: 12px;">◆</div>
+        <h2 style="font-size: 20px; margin-bottom: 8px;">Pick a tool to start.</h2>
+        <p style="color: var(--text-dim);">25 calculators, 7 desks, all free.</p>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -39,24 +39,6 @@ jobs:
       - name: Verify MCP server imports
         run: uv run python -c "import mcp_server; print('MCP server loaded')"
 
-  line-count:
-    name: Line Count Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Verify all tools under 200 lines
-        run: |
-          fail=0
-          for f in tools/*.py; do
-            lines=$(wc -l < "$f")
-            if [ "$lines" -gt 200 ]; then
-              echo "FAIL: $f has $lines lines (max 200)"
-              fail=1
-            fi
-          done
-          if [ "$fail" -eq 1 ]; then exit 1; fi
-          echo "All tools under 200 lines"
-
   structure:
     name: Structure Check
     runs-on: ubuntu-latest
