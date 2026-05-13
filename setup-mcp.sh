@@ -21,9 +21,10 @@ if ! command -v uv &> /dev/null; then
 fi
 echo "  ✓ uv available"
 
-# 2. Install MCP dependency
+# 2. Install MCP dependency (mcp lives in the `mcp` extra so the base install
+#    stays slim for Vercel; we explicitly pull it in here).
 cd "$REPO_DIR"
-uv sync --quiet
+uv sync --extra mcp --quiet
 echo "  ✓ MCP SDK installed"
 
 # 3. Smoke test — verify imports work

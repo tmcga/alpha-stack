@@ -3,7 +3,7 @@
   "functions": {
     "api/index.py": {
       "maxDuration": 30,
-      "includeFiles": "{tools,plugin,tui,skills}/**"
+      "excludeFiles": "{tests/**,examples/**,docs/**,scripts/**,.venv/**,.pytest_cache/**,.ruff_cache/**,__pycache__/**,**/__pycache__/**,*.lock,uv.lock,setup*.sh,plugin/addin/**}"
     }
   },
   "rewrites": [

@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
-      - run: uv sync
+      - run: uv sync --extra mcp
       - name: Verify MCP server imports
         run: uv run python -c "import mcp_server; print('MCP server loaded')"
 
