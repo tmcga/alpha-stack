@@ -19,8 +19,15 @@ excel = ["fastapi>=0.115.0", "uvicorn[standard]>=0.20.0"]
 [tool.vercel]
 entrypoint = "app:app"
 
-[tool.uv]
-package = false
+# Without [build-system], Vercel may skip the Python build step for this
+# project (it gets detected as static-only). Keep hatchling configured but
+# minimal — it's enough to trigger Python detection.
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 target-version = "py310"
