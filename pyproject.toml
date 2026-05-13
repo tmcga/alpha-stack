@@ -17,7 +17,7 @@ tui = ["textual>=1.0.0", "yfinance>=0.2.0"]
 excel = ["fastapi>=0.115.0", "uvicorn[standard]>=0.20.0"]
 
 [tool.vercel]
-entrypoint = "api.index:app"
+entrypoint = "app:app"
 
 [tool.uv]
 package = false

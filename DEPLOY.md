@@ -9,9 +9,9 @@ This deploys the web app (landing page + 25-tool runner) to Vercel as Python ser
 | `/` | `public/index.html` | Landing page with tool catalog |
 | `/app` | `public/app.html` | Tool runner UI |
 | `/styles.css` `/app.js` | `public/` | Static assets |
-| `/api/health` | `api/index.py` → `plugin/server/app.py` | Health check |
-| `/api/tools` | `api/index.py` | Tool registry (categories + params) |
-| `/api/tools/{key}/run` | `api/index.py` | Execute a tool with JSON params |
+| `/api/health` | `app.py` → `plugin/server/app.py` | Health check |
+| `/api/tools` | `app.py` | Tool registry (categories + params) |
+| `/api/tools/{key}/run` | `app.py` | Execute a tool with JSON params |
 
 Everything else (TUI, MCP server, Excel add-in, Claude Code skills) is **not** part of the Vercel deploy. They remain installable locally for power users.
 
@@ -36,7 +36,7 @@ vercel --prod       # deploy to production
 
 Vercel auto-detects:
 - `requirements.txt` → installs FastAPI for the Python runtime
-- `api/index.py` → mounts as a serverless function
+- `app.py` → mounts as a serverless function
 - `public/` → serves as static files
 - `vercel.json` → routing + headers
 
@@ -44,11 +44,11 @@ Vercel auto-detects:
 
 ```bash
 source .venv/bin/activate     # or create a venv with fastapi + uvicorn
-uvicorn api.index:app --reload --port 8765
+uvicorn app:app --reload --port 8765
 # visit http://127.0.0.1:8765
 ```
 
-`api/index.py` also mounts `public/` as static for local dev, so the full app works under uvicorn without `vercel dev`.
+`app.py` also mounts `public/` as static for local dev, so the full app works under uvicorn without `vercel dev`.
 
 ## Environment variables
 
@@ -56,8 +56,8 @@ Set in the Vercel dashboard under **Settings → Environment Variables**:
 
 | Var | Default | Notes |
 |-----|---------|-------|
-| `ALPHA_STACK_STATE_DIR` | `/tmp/alpha-stack/sessions` | Set by `api/index.py`; safe to leave default |
-| `ALPHA_STACK_WIKI_DIR` | `/tmp/alpha-stack/wiki` | Set by `api/index.py`; safe to leave default |
+| `ALPHA_STACK_STATE_DIR` | `/tmp/alpha-stack/sessions` | Set by `app.py`; safe to leave default |
+| `ALPHA_STACK_WIKI_DIR` | `/tmp/alpha-stack/wiki` | Set by `app.py`; safe to leave default |
 
 Neither is required, and neither persists. If you want a real persistence layer for sessions/wiki, swap in Vercel KV, Postgres, or Blob Storage — the read/write surface is small (see [tools/state.py](tools/state.py) and [tools/wiki.py](tools/wiki.py)).
 
