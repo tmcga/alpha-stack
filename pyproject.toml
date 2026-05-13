@@ -1,22 +1,26 @@
 [project]
-name = "alpha-stack-mcp"
+name = "alpha-stack"
 version = "1.0.0"
-description = "Alpha Stack MCP Server — 23 finance tools for Claude Desktop"
+description = "Alpha Stack — Finance AI skill system. Web app (FastAPI), MCP server, TUI, Excel add-in."
 requires-python = ">=3.10"
+# Base deps = what the Vercel-deployed web app needs. Vercel reads this file
+# and installs only these on the serverless function. Heavier surfaces
+# (MCP, TUI, Excel server) opt in via the extras below.
 dependencies = [
-    "mcp[cli]>=1.0.0",
+    "fastapi>=0.115.0",
+    "anthropic>=0.69.0",
 ]
 
 [project.optional-dependencies]
+mcp = ["mcp[cli]>=1.0.0"]
 tui = ["textual>=1.0.0", "yfinance>=0.2.0"]
-excel = ["fastapi>=0.100.0", "uvicorn[standard]>=0.20.0"]
+excel = ["fastapi>=0.115.0", "uvicorn[standard]>=0.20.0"]
 
-[tool.hatch.build.targets.wheel]
-packages = ["."]
+[tool.vercel]
+entrypoint = "api.index:app"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[tool.uv]
+package = false
 
 [tool.ruff]
 target-version = "py310"

@@ -102,7 +102,13 @@
   <script>
     // Tools grid
     fetch('/api/tools')
-      .then(r => r.json())
+      .then(async (r) => {
+        if (!r.ok) {
+          const body = await r.text();
+          throw new Error(`HTTP ${r.status} — ${body.slice(0, 200)}`);
+        }
+        return r.json();
+      })
       .then(data => {
         const grid = document.getElementById('tool-list');
         grid.innerHTML = '';
@@ -122,9 +128,12 @@
           }
         }
       })
-      .catch(() => {
+      .catch((err) => {
         document.getElementById('tool-list').innerHTML =
-          '<div style="color: var(--red); padding: 24px;">API unreachable. Make sure the server is running.</div>';
+          `<div style="color: var(--red); padding: 24px; font-family: var(--mono); font-size: 12px;">
+            API error: ${String(err.message || err)}
+            <br><br>Hit <a href="/api/__diag" style="color: var(--amber);">/api/__diag</a> to see what's wrong on the server.
+          </div>`;
       });
 
     // Templates grid
