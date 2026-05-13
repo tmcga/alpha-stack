@@ -1,22 +1,23 @@
-"""Vercel Python serverless entry point.
+"""Vercel Python entrypoint — lives at the project root so Vercel's framework
+preset for FastAPI auto-detects it. Putting this in `api/` instead would flip
+Vercel into legacy "serverless functions directory" mode where each .py file
+in api/ is treated as a separate function, and the framework preset for
+routing to the whole FastAPI app is disabled.
 
-Wraps the existing FastAPI app so it's reachable at /api/*.
-The base app's routes (e.g. /health, /tools) become /api/health, /api/tools.
+The actual route logic lives in plugin/server/app.py and plugin/server/chat.py.
+This file is just the entrypoint Vercel loads.
 
-Heavy imports are wrapped so that if they fail (missing sibling dirs,
-missing deps), /api/__diag still responds with what went wrong.
-Route order matters — /api/__diag is registered BEFORE the /api mount
-so it takes precedence over the mounted sub-app.
+Heavy imports are wrapped so that if they fail, /api/__diag still responds
+with what went wrong. Route order matters — /api/__diag is registered BEFORE
+the /api mount so it takes precedence over the mounted sub-app.
 """
 
 import os
 import sys
 import traceback
 
-# Make project root importable. On Vercel, __file__ resolves under /var/task/api/,
-# so _ROOT = /var/task. tools/, plugin/, tui/ get bundled via vercel.json
-# `includeFiles`.
-_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# app.py lives at the project root, so _ROOT is just its own directory.
+_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _ROOT)
 sys.path.insert(0, os.path.join(_ROOT, "tools"))
 
@@ -65,23 +66,26 @@ if _BASE_APP is not None:
     app.mount("/api", _BASE_APP)
 
 
-# ── Local-dev only routes (Vercel handles /, /app, /chat via static + rewrites) ──
+# ── Local-dev only routes (Vercel handles /, /app, /chat via static + cleanUrls) ──
+# On Vercel, VERCEL env var is always set. Don't register the static mount there —
+# Vercel serves public/ directly from its edge, and an extra mount would compete
+# for the same paths.
 _PUBLIC_DIR = os.path.join(_ROOT, "public")
+_IS_VERCEL = os.environ.get("VERCEL") == "1"
 
+if not _IS_VERCEL:
 
-@app.get("/app")
-async def app_page():
-    p = os.path.join(_PUBLIC_DIR, "app.html")
-    return FileResponse(p) if os.path.isfile(p) else JSONResponse({"error": "app.html missing"}, status_code=404)
+    @app.get("/app")
+    async def app_page():
+        p = os.path.join(_PUBLIC_DIR, "app.html")
+        return FileResponse(p) if os.path.isfile(p) else JSONResponse({"error": "app.html missing"}, status_code=404)
 
+    @app.get("/chat")
+    async def chat_page():
+        p = os.path.join(_PUBLIC_DIR, "chat.html")
+        return FileResponse(p) if os.path.isfile(p) else JSONResponse({"error": "chat.html missing"}, status_code=404)
 
-@app.get("/chat")
-async def chat_page():
-    p = os.path.join(_PUBLIC_DIR, "chat.html")
-    return FileResponse(p) if os.path.isfile(p) else JSONResponse({"error": "chat.html missing"}, status_code=404)
+    if os.path.isdir(_PUBLIC_DIR):
+        from fastapi.staticfiles import StaticFiles  # noqa: E402
 
-
-if os.path.isdir(_PUBLIC_DIR):
-    from fastapi.staticfiles import StaticFiles  # noqa: E402
-
-    app.mount("/", StaticFiles(directory=_PUBLIC_DIR, html=True), name="public")
+        app.mount("/", StaticFiles(directory=_PUBLIC_DIR, html=True), name="public")
