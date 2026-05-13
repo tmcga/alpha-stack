@@ -1,6 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "fastapi",
+  "framework": null,
+  "buildCommand": null,
+  "outputDirectory": null,
+  "installCommand": null,
+  "functions": {
+    "app.py": {
+      "runtime": "@vercel/python@6.40.0"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/app.py" }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
