@@ -65,23 +65,26 @@ if _BASE_APP is not None:
     app.mount("/api", _BASE_APP)
 
 
-# ── Local-dev only routes (Vercel handles /, /app, /chat via static + rewrites) ──
+# ── Local-dev only routes (Vercel handles /, /app, /chat via static + cleanUrls) ──
+# On Vercel, VERCEL env var is always set. Don't register the static mount there —
+# Vercel serves public/ directly from its edge, and an extra mount would compete
+# for the same paths.
 _PUBLIC_DIR = os.path.join(_ROOT, "public")
+_IS_VERCEL = os.environ.get("VERCEL") == "1"
 
+if not _IS_VERCEL:
 
-@app.get("/app")
-async def app_page():
-    p = os.path.join(_PUBLIC_DIR, "app.html")
-    return FileResponse(p) if os.path.isfile(p) else JSONResponse({"error": "app.html missing"}, status_code=404)
+    @app.get("/app")
+    async def app_page():
+        p = os.path.join(_PUBLIC_DIR, "app.html")
+        return FileResponse(p) if os.path.isfile(p) else JSONResponse({"error": "app.html missing"}, status_code=404)
 
+    @app.get("/chat")
+    async def chat_page():
+        p = os.path.join(_PUBLIC_DIR, "chat.html")
+        return FileResponse(p) if os.path.isfile(p) else JSONResponse({"error": "chat.html missing"}, status_code=404)
 
-@app.get("/chat")
-async def chat_page():
-    p = os.path.join(_PUBLIC_DIR, "chat.html")
-    return FileResponse(p) if os.path.isfile(p) else JSONResponse({"error": "chat.html missing"}, status_code=404)
+    if os.path.isdir(_PUBLIC_DIR):
+        from fastapi.staticfiles import StaticFiles  # noqa: E402
 
-
-if os.path.isdir(_PUBLIC_DIR):
-    from fastapi.staticfiles import StaticFiles  # noqa: E402
-
-    app.mount("/", StaticFiles(directory=_PUBLIC_DIR, html=True), name="public")
+        app.mount("/", StaticFiles(directory=_PUBLIC_DIR, html=True), name="public")
